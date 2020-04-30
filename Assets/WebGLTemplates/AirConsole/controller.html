@@ -21,26 +21,18 @@
 
 
 	
-
-
-
-	<div id="control" class="view" style="display: none;">
-		<div id="control-section-0" class="section " style="height: 100%;">
-			<div id="main-arrows" class="dpad-absolute-container">
-				<div class="dpad-absolute" style="position: static;">
-					<div class="dpad-arrow dpad-arrow-up"></div>
-					<div class="dpad-arrow dpad-arrow-down"></div>
-					<div class="dpad-arrow dpad-arrow-left"></div>
-					<div class="dpad-arrow dpad-arrow-right"></div>
-				</div>
-			</div>
-		</div>
-		<div id="control-section-1" class="section " style="height: 100%;">
-			<div id="btn-interact" class="button-300-300 button-element element">
-				<div class="button-text">INTERACT</div>
-			</div>
-		</div>
-	</div>
+<div id="control" class="view" style="display: flex;">
+    <div id="control-section-0" class="section " style="height: 100%;">
+    <div id="btn-left" class="button-300-300 button-element element">
+  <div class="button-text">Left</div>
+</div>
+</div>
+    <div id="control-section-1" class="section " style="height: 100%;">
+    <div id="btn-right" class="button-300-300 button-element element">
+  <div class="button-text">Right</div>
+</div>
+</div>
+</div>
 
 
 
@@ -57,8 +49,9 @@
 
 
 <script type="text/javascript">
-  var ctrl_data = '{"orientation":"landscape","selected_view_id":"control","views":[{"id":"control","sections":[{"id":"control-section-0","elements":[{"id":"main-arrows","key":"dpad_absolute","name":"DPad Absolute","tmpl":"dpad","constructor_fn":"DPadAbsoluteElement","options":{"constructor_args":{"diagonal":true},"attr_id":"control-section-0-element-0","css_classes":"","view_action":{"target":null,"view_id":null}}}],"classes":[]},{"id":"control-section-1","elements":[{"id":"btn-interact","key":"button","name":"Button","tmpl":"button","constructor_fn":"ButtonElement","options":{"constructor_args":{},"attr_id":"control-section-1-element-0","css_classes":"button-300-300","view_action":{"target":null,"view_id":null},"label":"INTERACT","send_onrelease":true,"message_data":[]}}],"classes":[]}]}]}';
+  var ctrl_data = '{"orientation":"landscape","selected_view_id":"control","views":[{"id":"control","sections":[{"id":"control-section-0","elements":[{"id":"btn-left","key":"button","name":"Button","tmpl":"button","constructor_fn":"ButtonElement","options":{"constructor_args":{},"attr_id":"control-section-0-element-0","css_classes":"button-300-300","view_action":{"target":null,"view_id":null},"label":"Left","send_onrelease":false,"message_data":[]}}],"classes":[]},{"id":"control-section-1","elements":[{"id":"btn-right","key":"button","name":"Button","tmpl":"button","constructor_fn":"ButtonElement","options":{"constructor_args":{},"attr_id":"btn-interact","css_classes":"button-300-300","view_action":{"target":null,"view_id":null},"label":"Right","send_onrelease":true,"message_data":[]}}],"classes":[]}]}]}';
 </script>
+
 
 
     <!-- REPLACE_HERE END -->

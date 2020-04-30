@@ -160,76 +160,25 @@ public class AirConsoleInput : MonoBehaviour
 
     void OnMessage(int device_id, JToken data)
     {
-
-        debugText.text = data.ToString();
-        if (players.ContainsKey(device_id) && data != null)
+        if (players.ContainsKey(device_id) && data["data"] != null)
         {
-            if (data["joystick-left"] != null)
-            {
-                Vector2 movement = Vector2.zero;
-
-                if(data["joystick-left"]["pressed"].Value<bool>())
-                {
-                    
-                    movement = new Vector2(data["joystick-left"]["message"]["x"].Value<float>(), data["joystick-left"]["message"]["y"].Value<float>() * -1f);
-                }
-                else
-                {
-                    //Zero
-                }
-                players[device_id].MoveInput(movement);
-            }
-
-            
-            if (data["look"] != null)
-            {
-                Vector2 lookDirection = Vector2.zero;
-                if (data["look"]["pressed"].Value<bool>())
-                {
-                    lookDirection = new Vector2(data["look"]["message"]["x"].Value<float>(), data["look"]["message"]["y"].Value<float>() * -1f);
-                    
-                }
-                else
-                {
-
-                    //Stay as it was.
-                }
-                players[device_id].LookInput(lookDirection);
-            }
-
-            if (data["shield"] != null)
-            {
-                bool active = data["shield"]["pressed"].Value<bool>();
-                players[device_id].Shield(active);
-            }
-
-            
-
             //Debug.Log("message: " + data);
 
-            //string element = (string)data["element"];
+            string element = (string)data["element"];
 
-            //switch (element)
-            //{
-            //    case "btn-interact":
-            //        players[device_id].InteractInput((bool)data["data"]["pressed"]);
-            //        if (!firstMessage)
-            //        {
-            //            GameManager.Instance.StartGame(0);
-            //            firstMessage = true;
-            //        }
-            //        break;
-            //    case "main-arrows":
-            //        players[device_id].MoveInput((string)data["data"]["key"], (bool)data["data"]["pressed"]);
-            //        if (!firstMessage)
-            //        {
-            //            GameManager.Instance.StartGame(0);
-            //            firstMessage = true;
-            //        }
-            //        break;
-            //}
-
-            //I forward the command to the relevant player script, assigned by device ID
+            switch (element)
+            {
+                case "btn-left":
+                    int left = (bool)data["data"]["pressed"] ? -1 : 0;
+                    Vector2 vl = new Vector2(left, 0f);
+                    players[device_id].MoveInput(vl);
+                    break;
+                case "btn-right":
+                    int right = (bool)data["data"]["pressed"] ? 1 : 0;
+                    Vector2 vr = new Vector2(right, 0f);
+                    players[device_id].MoveInput(vr);
+                    break;
+            }
         }
 
     }
