@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour
     {
         this.GetComponent<Rigidbody2D>().velocity = this.transform.right * speed;
         actualDamage = baseDamage;
-        Destroy(this.gameObject, 3f);
+        Destroy(this.gameObject, 10f);
     }
 
     private void Update()

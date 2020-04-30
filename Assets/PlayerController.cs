@@ -149,6 +149,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     }
 
+    public void ForceCenterLook()
+    {
+        transform.right = (-transform.position + Vector3.zero).normalized;
+    }
+
     private void Shoot()
     {
         GameObject bullet = Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);  

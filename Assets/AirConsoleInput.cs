@@ -7,11 +7,9 @@ using System.Collections.Generic;
 public class AirConsoleInput : MonoBehaviour
 {
 
-    public GameObject playerPrefab;
+
+    private bool firstMasterMessage;
     
-
-    public UnityEngine.UI.Text debugText;
-
     void Awake()
     {
         if (AirConsole.instance == null)
@@ -115,6 +113,18 @@ public class AirConsoleInput : MonoBehaviour
 
     void OnMessage(int device_id, JToken data)
     {
+        //First message of master start game
+        if(!firstMasterMessage)
+        {
+            int actualMaster = AirConsole.instance.GetMasterControllerDeviceId();
+            if(device_id == actualMaster)
+            {
+                firstMasterMessage = true;
+                GameManager.Instance.StartGame();
+            }
+        }
+        
+        //Check message
         if (GameManager.Instance.PlayerExists(device_id) && data["data"] != null)
         {
             //Debug.Log("message: " + data);

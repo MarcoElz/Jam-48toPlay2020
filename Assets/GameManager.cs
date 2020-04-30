@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Doozy.Engine.UI;
 
 public enum GameState { Initializing, LastManStanding, PlayersVsLastMan, PlayersVsLastBoss  }
 
@@ -13,6 +15,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] int numberOfAI = 7;
     [SerializeField] int maxNumberOfPlayers = 8;
     [SerializeField] Color[] colors;
+
+    [Header("Other")]
+    [SerializeField] UIView messageView;
+    [SerializeField] TextMeshProUGUI messageLabel;
 
     //Properties
     public static GameManager Instance { get; private set; } //Singleton
@@ -32,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     //Cache
     private DeadCircle circle;
+    private Counter counter;
 
     //Monobehaviour methods like Awake, Start, Update
     #region Monobehaviour
@@ -48,8 +55,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         circle = FindObjectOfType<DeadCircle>();
+        counter = FindObjectOfType<Counter>();
 
-        for(int i = 0; i < numberOfAI; i++)
+        for (int i = 0; i < numberOfAI; i++)
         {
             SpawnAI(basicAIControllerPrefab);
         }
@@ -71,8 +79,14 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        circle.Restart();
         HealAll();
+        RepositionPlayers();
+        counter.StartCount(ActivateGame);
+    }
 
+    private void ActivateGame()
+    {
         IsGameActive = true;
         onGameStart?.Invoke();
     }
@@ -102,23 +116,34 @@ public class GameManager : MonoBehaviour
     public void PlayerKilled()
     {
         int alive = 0;
+        PlayerController lastAlive = null;
         foreach (var item in players)
         {
             if (item.Value.IsAlive)
+            {
+                lastAlive = item.Value;
                 alive++;
+            }
         }
 
         if(alive == 1)
         {
             //Game Ends
-            GameEnds();
+            GameEnds(lastAlive);
         }
     }
 
-    void GameEnds()
+    void GameEnds(PlayerController player)
     {
+        string hex = player != null ? ColorUtility.ToHtmlStringRGB(player.myColor) : "000000";
+        messageLabel.text = "Player <color=#"+hex+">#" + hex + "</color>\nWins!";
+        messageView.Show();
         IsGameActive = false;
         onGameEnd?.Invoke();
+
+        //TODO: Remove
+        messageView.Hide(3f);
+        Invoke("StartGame", 3f);
     }
 
 
@@ -205,6 +230,22 @@ public class GameManager : MonoBehaviour
     {
         //Insert it to the top of the list
         availableColors.Insert(0, color); 
+    }
+
+    private void RepositionPlayers()
+    {
+        if (circle == null) circle = FindObjectOfType<DeadCircle>();
+
+        int count = 0;
+        foreach (var item in players)
+        {
+            float angle = count * Mathf.PI * 2 / maxNumberOfPlayers;
+            Vector3 pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * circle.Radius;
+            item.Value.transform.position = pos;
+            item.Value.ForceCenterLook();
+            count++;
+        }
+        
     }
     #endregion
 }

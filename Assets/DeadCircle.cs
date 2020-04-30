@@ -48,6 +48,11 @@ public class DeadCircle : MonoBehaviour
 
     void OnStartGame()
     {
+        Restart();
+    }
+
+    public void Restart()
+    {
         completeRadius = transform.localScale.x;
         timer = timeToFinish;
     }
