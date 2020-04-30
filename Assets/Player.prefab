@@ -1091,18 +1091,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7775481925c3b314b9f80ef40bcd6b85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shield: {fileID: 2131405036}
-  spriteRenderer: {fileID: 4734626304354892064}
-  linePrefab: {fileID: 8413751325000847895, guid: d8c8941ff31197a4f8ffdb2fc90a7af5,
-    type: 3}
   speed: 15
   rotationSpeed: 0.4
   startHP: 100
-  radiusMovement: 5
-  autoShoot: 1
+  timeBetweenShoots: 0.25
   bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
     type: 3}
   bulletOrigin: {fileID: 371800353}
+  spriteRenderer: {fileID: 4734626304354892064}
+  shield: {fileID: 2131405036}
+  linePrefab: {fileID: 8413751325000847895, guid: d8c8941ff31197a4f8ffdb2fc90a7af5,
+    type: 3}
+  radiusMovement: 5
 --- !u!50 &1129678621
 Rigidbody2D:
   serializedVersion: 4
@@ -1134,7 +1134,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class KeyboardInput : MonoBehaviour
 {
-    [SerializeField] GameObject playerPrefab;
     [SerializeField] bool rawInput;
 
     PlayerController player;
@@ -24,20 +23,20 @@ public class KeyboardInput : MonoBehaviour
 
 
         //Look
-        Vector3 mousePos = Vector3.zero;
-        mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
-        Vector3 lookPos = Camera.main.ScreenToWorldPoint(mousePos);
-        lookPos = lookPos - player.transform.position;
-        if(!Input.GetMouseButton(0))
-            lookPos = lookPos.normalized / 2f;
-        player.LookInput(lookPos);
+        //Vector3 mousePos = Vector3.zero;
+        //mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
+        //Vector3 lookPos = Camera.main.ScreenToWorldPoint(mousePos);
+        //lookPos = lookPos - player.transform.position;
+        //if(!Input.GetMouseButton(0))
+        //    lookPos = lookPos.normalized / 2f;
+        //player.LookInput(lookPos);
 
 
         //Shield
-        if (Input.GetKeyDown(KeyCode.Space))
-            player.Shield(true);
-        else if (Input.GetKeyUp(KeyCode.Space))
-            player.Shield(false);
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //    player.Shield(true);
+        //else if (Input.GetKeyUp(KeyCode.Space))
+        //    player.Shield(false);
 
     }
 }

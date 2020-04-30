@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class DeadCircle : MonoBehaviour
 {
-    public float Radius { get { return transform.localScale.x / 2.0f; } }
+    public float Radius { get { return transform.localScale.x * 0.5f; } }
 
     [SerializeField] float timeToFinish = 60f;
     [SerializeField] float damagePerSecond = 5f;
+    [SerializeField] float minRadius = 5f;
     private List<PlayerController> players;
 
     private float completeRadius;
@@ -20,18 +21,35 @@ public class DeadCircle : MonoBehaviour
         timer = timeToFinish;
     }
 
+    private void Start()
+    {
+        GameManager.Instance.onGameStart += OnStartGame;
+    }
+
     private void Update()
     {
-        if(timer <= 5f)
+        if (!GameManager.Instance.IsGameActive)
+            return;
+
+        if(Radius < minRadius)
         {
-            timer = timeToFinish;
-            transform.localScale = Vector3.one * completeRadius;
+            //Stop
             return;
         }
 
+        //Reduce Area
         timer -= Time.deltaTime;
         transform.localScale -= Vector3.one * (completeRadius / timeToFinish * Time.deltaTime);
-        CheckPlayers();
+
+        //Damage Players
+        if(damagePerSecond > 0f)
+            DamagePlayers();
+    }
+
+    void OnStartGame()
+    {
+        completeRadius = transform.localScale.x;
+        timer = timeToFinish;
     }
 
     public void RegisterToList(PlayerController player)
@@ -44,7 +62,7 @@ public class DeadCircle : MonoBehaviour
         players.Remove(player);
     }
 
-    void CheckPlayers()
+    void DamagePlayers()
     {
         float radius = Radius;
         for (int i = 0; i < players.Count; i++)

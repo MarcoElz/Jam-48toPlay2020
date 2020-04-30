@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &44881463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeToFinish: 60
   damagePerSecond: 0
+  minRadius: 5
 --- !u!1 &484320395
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,7 +680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &660338423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,8 +693,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaaa1e8ad28cdbe498b70573f846c9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 3335212029411863970, guid: 336492e4ced948f40b9801be758d6b71,
-    type: 3}
   rawInput: 1
 --- !u!4 &660338424
 Transform:
@@ -1187,6 +1186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 074435bf4a29e824f9f747d570161da6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 3335212029411863970, guid: 336492e4ced948f40b9801be758d6b71,
+    type: 3}
+  basicAIControllerPrefab: {fileID: 2618072179443811952, guid: 0606220ce7e074b4a82000c67874b3c1,
+    type: 3}
+  numberOfAI: 7
+  maxNumberOfPlayers: 8
   colors:
   - {r: 0.106000006, g: 0.33037648, b: 1, a: 1}
   - {r: 0.125, g: 1, b: 0, a: 1}

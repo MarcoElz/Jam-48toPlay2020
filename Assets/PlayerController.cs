@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour, IDamageable
 {
     public float HP { get; private set; }
+    public bool IsAlive { get; private set; }
 
     public event Action<float> onHPUpdate;
     public Color myColor { get; private set; }
@@ -59,9 +60,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         canShoot = true;
         timeOfLastShoot = 0f;
         HP = startHP;
+        IsAlive = true;
 
         deadCircle = FindObjectOfType<DeadCircle>();
         deadCircle.RegisterToList(this);
+
+        transform.right = (-transform.position + Vector3.zero).normalized;
     }
 
     public void SetColor(Color color)
@@ -99,8 +103,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         
     }
 
+    
+
     private void Update()
     {
+        if (!GameManager.Instance.IsGameActive)
+            return;
+
         //Verify never is in the center
         if(transform.position.sqrMagnitude == 0)
         {
@@ -146,13 +155,17 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     public void Damage(float amount)
-    {      
+    {
+        if (!GameManager.Instance.IsGameActive)
+            return;
+
         HP -= amount;
         if(HP <= 0f)
         {
-            //Reset
-            transform.position = Vector3.zero;
-            HP = startHP;
+            //Dead
+            IsAlive = false;
+            GameManager.Instance.PlayerKilled();
+            this.gameObject.SetActive(false);
         }
         onHPUpdate?.Invoke(HP / startHP);
     }
@@ -160,6 +173,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void Heal(float amount)
     {
         HP += amount;
+        HP = Mathf.Clamp(HP, 0f, startHP);
         onHPUpdate?.Invoke(HP / startHP);
     }
 }

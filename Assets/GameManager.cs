@@ -1,23 +1,40 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameState { Initializing, LastManStanding, PlayersVsLastMan, PlayersVsLastBoss  }
+
 public class GameManager : MonoBehaviour
 {
-
-    private Dictionary<int, PlayerController> players = new Dictionary<int, PlayerController>();
-    [SerializeField] int maxNumberOfPlayers = 8;
+    [Header("Player Settings")]
     [SerializeField] GameObject playerPrefab;
-
+    [SerializeField] GameObject basicAIControllerPrefab;
+    [SerializeField] int numberOfAI = 7;
+    [SerializeField] int maxNumberOfPlayers = 8;
     [SerializeField] Color[] colors;
 
+    //Properties
+    public static GameManager Instance { get; private set; } //Singleton
     public int MaxNumberOfPlayers { get { return maxNumberOfPlayers; } }
+    
+    public bool IsGameActive { get; private set; }
 
+    public GameState State { get; private set; }
+
+    //Events
+    public event Action onGameStart;
+    public event Action onGameEnd;
+
+    //Data Structures
+    private Dictionary<int, PlayerController> players = new Dictionary<int, PlayerController>();
     private List<Color> availableColors;
+
+    //Cache
     private DeadCircle circle;
 
-
-    public static GameManager Instance { get; private set; }
+    //Monobehaviour methods like Awake, Start, Update
+    #region Monobehaviour
 
     private void Awake()
     {
@@ -25,13 +42,94 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         availableColors = new List<Color>(colors);
+        State = GameState.Initializing;
     }
 
     private void Start()
     {
         circle = FindObjectOfType<DeadCircle>();
+
+        for(int i = 0; i < numberOfAI; i++)
+        {
+            SpawnAI(basicAIControllerPrefab);
+        }
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            ForceEnd();
+        }
+
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            StartGame();
+        }
+    }
+    #endregion
+
+    public void StartGame()
+    {
+        HealAll();
+
+        IsGameActive = true;
+        onGameStart?.Invoke();
+    }
+
+    private void ForceEnd()
+    {
+        //Kill all players
+        foreach (var item in players)
+        {
+            item.Value.Damage(1000);
+        }
+
+        IsGameActive = false;
+    }
+
+    private void HealAll()
+    {
+        //Kill all players
+        foreach (var item in players)
+        {
+            item.Value.Heal(1000);
+            if(!item.Value.gameObject.activeSelf)
+                item.Value.gameObject.SetActive(true);
+        }
+    }
+
+    public void PlayerKilled()
+    {
+        int alive = 0;
+        foreach (var item in players)
+        {
+            if (item.Value.IsAlive)
+                alive++;
+        }
+
+        if(alive == 1)
+        {
+            //Game Ends
+            GameEnds();
+        }
+    }
+
+    void GameEnds()
+    {
+        IsGameActive = false;
+        onGameEnd?.Invoke();
+    }
+
+
+
+    private void SpawnAI(GameObject prefab)
+    {
+        Instantiate(prefab);
+    }
+
+    //Player related methods
+    #region Players
     public PlayerController CreatePlayer(int deviceID)
     {
         //Too many players
@@ -108,4 +206,5 @@ public class GameManager : MonoBehaviour
         //Insert it to the top of the list
         availableColors.Insert(0, color); 
     }
+    #endregion
 }
