@@ -78,11 +78,10 @@ public class AirConsoleInput : MonoBehaviour
         //Get an equidistance point on circle
         DeadCircle circle = FindObjectOfType<DeadCircle>();
         Vector3 pos = Vector3.zero;
-        for (int i = 0; i < 8; i++)
-        {
-            float angle = i * Mathf.PI * 2f / 8;
-            pos = new Vector3(Mathf.Cos(angle) * circle.Radius, Mathf.Sin(angle) * circle.Radius, 0f);
-        }
+        int numberOfObjects = 8;
+
+        float angle = players.Count * Mathf.PI * 2 / numberOfObjects;
+        pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * circle.Radius;
 
         //Instantiate player prefab, store device id + player script in a dictionary
         GameObject newPlayer = Instantiate(playerPrefab, pos, transform.rotation) as GameObject;
