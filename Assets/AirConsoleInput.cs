@@ -8,7 +8,7 @@ public class AirConsoleInput : MonoBehaviour
 {
 
     public GameObject playerPrefab;
-    public Dictionary<int, PlayerController> players = new Dictionary<int, PlayerController>();
+    
 
     public UnityEngine.UI.Text debugText;
 
@@ -51,51 +51,27 @@ public class AirConsoleInput : MonoBehaviour
 
     void OnDisconnect(int device_id)
     {
-        RemovePlayer(device_id);
+        GameManager.Instance.RemovePlayer(device_id);
     }
 
     private void AddNewPlayer(int deviceID)
     {
-        if (players.ContainsKey(deviceID))
-        {
+        //Is repeated
+        if (GameManager.Instance.PlayerExists(deviceID))
             return;
-        }
-        if (players.Count >= 9) //Max numberof players
-        {
-            AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, "none"));
-            return;
-        }
 
-        //Color
-        Color color = GameManager.Instance.GetNextColor();
-
-        if(color.a < 0.5f)
+        var player = GameManager.Instance.CreatePlayer(deviceID);
+        
+        //Can't have more players
+        if (player == null)
         {
             AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, "none"));
             return;
-        }
-
-        //Get an equidistance point on circle
-        DeadCircle circle = FindObjectOfType<DeadCircle>();
-        Vector3 pos = Vector3.zero;
-        int numberOfObjects = 8;
-
-        float angle = players.Count * Mathf.PI * 2 / numberOfObjects;
-        pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * circle.Radius;
-
-        //Instantiate player prefab, store device id + player script in a dictionary
-        GameObject newPlayer = Instantiate(playerPrefab, pos, transform.rotation) as GameObject;
-        PlayerController playerController = newPlayer.GetComponent<PlayerController>();
-        players.Add(deviceID, playerController);
-
-        //Set position and color
-        newPlayer.transform.position = pos;
-        playerController.SetColor(color);
+        }      
 
         //Send Color message to AirConsole
-        AirConsole.instance.Message(deviceID, color.ToString().ToLower());
         StartCoroutine(SetViewDelayed("control", 1.5f));
-        string colorString = "#" + ColorUtility.ToHtmlStringRGB(color); // "rgb("+color.r + "," + color.g + ", " + color.b  +")";
+        string colorString = "#" + ColorUtility.ToHtmlStringRGB(player.myColor); // "rgb("+color.r + "," + color.g + ", " + color.b  +")";
         AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, colorString));
     }
 
@@ -137,29 +113,9 @@ public class AirConsoleInput : MonoBehaviour
         //the controller listens for the onCustomDeviceStateChanged event. See the  controller-gamestates.html file for how this is handled there. 
     }
 
-    private void RemovePlayer(int deviceID)
-    {
-        if (!players.ContainsKey(deviceID))
-        {
-            return;
-        }
-
-        //Get the player 
-        PlayerController player = players[deviceID];
-
-        //Return color to the pool
-        Color color = player.myColor;
-        GameManager.Instance.ReturnColorToList(color);
-
-        //Destroy that player objects
-        player.RemoveFromGame();
-        Destroy(player.gameObject);
-        players.Remove(deviceID);
-    }
-
     void OnMessage(int device_id, JToken data)
     {
-        if (players.ContainsKey(device_id) && data["data"] != null)
+        if (GameManager.Instance.PlayerExists(device_id) && data["data"] != null)
         {
             //Debug.Log("message: " + data);
 
@@ -170,12 +126,12 @@ public class AirConsoleInput : MonoBehaviour
                 case "btn-left":
                     int left = (bool)data["data"]["pressed"] ? -1 : 0;
                     Vector2 vl = new Vector2(left, 0f);
-                    players[device_id].MoveInput(vl);
+                    GameManager.Instance.GetPlayer(device_id).MoveInput(vl);
                     break;
                 case "btn-right":
                     int right = (bool)data["data"]["pressed"] ? 1 : 0;
                     Vector2 vr = new Vector2(right, 0f);
-                    players[device_id].MoveInput(vr);
+                    GameManager.Instance.GetPlayer(device_id).MoveInput(vr);
                     break;
             }
         }

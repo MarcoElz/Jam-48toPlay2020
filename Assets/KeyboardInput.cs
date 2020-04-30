@@ -11,12 +11,7 @@ public class KeyboardInput : MonoBehaviour
 
     private void Start()
     {
-        Vector3 pos = transform.position;
-        pos.x = Random.Range(-7f, 7f);
-        pos.y = Random.Range(-4f, 4f);
-        GameObject newPlayer = Instantiate(playerPrefab, pos, transform.rotation) as GameObject;
-        PlayerController playerController = newPlayer.GetComponent<PlayerController>();
-        player = playerController;
+        player = GameManager.Instance.CreatePlayer(101);
     }
 
     private void Update()
