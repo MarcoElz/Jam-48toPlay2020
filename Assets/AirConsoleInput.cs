@@ -22,17 +22,17 @@ public class AirConsoleInput : MonoBehaviour
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onReady += OnReady;
-        //AirConsole.instance.onDisconnect += OnDisconnect;
+        AirConsole.instance.onDisconnect += OnDisconnect;
     }
 
     void OnReady(string code)
     {
         //Initialize Game State
-        //JObject newGameState = new JObject();
-        //newGameState.Add("view", new JObject());
-        //newGameState.Add("playerColors", new JObject());
+        JObject newGameState = new JObject();
+        newGameState.Add("view", new JObject());
+        newGameState.Add("playerColors", new JObject());
 
-        //AirConsole.instance.SetCustomDeviceState(newGameState);
+        AirConsole.instance.SetCustomDeviceState(newGameState);
 
 
         //Since people might be coming to the game from the AirConsole store once the game is live, 
@@ -47,20 +47,11 @@ public class AirConsoleInput : MonoBehaviour
     void OnConnect(int device_id)
     {
         AddNewPlayer(device_id);
+    }
 
-        if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
-        {
-
-            if (AirConsole.instance.GetControllerDeviceIds().Count >= 2)
-            {
-                //StartGame();
-                //GameManager.Instance.StartGame(0);
-            }
-            else
-            {
-                //uiText.text = "NEED MORE PLAYERS";
-            }
-        }
+    void OnDisconnect(int device_id)
+    {
+        RemovePlayer(device_id);
     }
 
     private void AddNewPlayer(int deviceID)
@@ -69,40 +60,102 @@ public class AirConsoleInput : MonoBehaviour
         {
             return;
         }
-        if (players.Count >= 4)
+        if (players.Count >= 9) //Max numberof players
         {
-            //AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, "none"));
+            AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, "none"));
             return;
         }
 
         //Color
-        //PlayerColor color = availableColors[0];
-        //availableColors.RemoveAt(0);
-        //usedColors.Add(color);
+        Color color = GameManager.Instance.GetNextColor();
+
+        if(color.a < 0.5f)
+        {
+            AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, "none"));
+            return;
+        }
+
+        //Get an equidistance point on circle
+        DeadCircle circle = FindObjectOfType<DeadCircle>();
+        Vector3 pos = Vector3.zero;
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * Mathf.PI * 2f / 8;
+            pos = new Vector3(Mathf.Cos(angle) * circle.Radius, Mathf.Sin(angle) * circle.Radius, 0f);
+        }
 
         //Instantiate player prefab, store device id + player script in a dictionary
-        Vector3 pos = transform.position;
-        pos.x = Random.Range(-7f, 7f);
-        pos.y = Random.Range(-4f, 4f);
-        //pos.x = deviceID -2f;
-
-        //pos.x = pos.x + ((int)color * 2);
-
         GameObject newPlayer = Instantiate(playerPrefab, pos, transform.rotation) as GameObject;
         PlayerController playerController = newPlayer.GetComponent<PlayerController>();
         players.Add(deviceID, playerController);
 
-
+        //Set position and color
         newPlayer.transform.position = pos;
+        playerController.SetColor(color);
 
+        //Send Color message to AirConsole
+        AirConsole.instance.Message(deviceID, color.ToString().ToLower());
+        StartCoroutine(SetViewDelayed("control", 1.5f));
+        string colorString = "#" + ColorUtility.ToHtmlStringRGB(color); // "rgb("+color.r + "," + color.g + ", " + color.b  +")";
+        AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, colorString));
+    }
 
+    IEnumerator SetViewDelayed(string view, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SetView(view);
+    }
 
-        //playerController.color = color;
+    public static JToken UpdatePlayerColorData(JToken oldGameState, int deviceId, string colorName)
+    {
 
-        //players[deviceID].SetMaterial(playersMats[(int)color]);
-        //AirConsole.instance.Message(deviceID, color.ToString().ToLower());
-        //StartCoroutine(SetViewDelayed("control", 1.5f));
-        //AirConsole.instance.SetCustomDeviceStateProperty("playerColors", UpdatePlayerColorData(AirConsole.instance.GetCustomDeviceState(0), deviceID, color.ToString().ToLower()));
+        //take out the existing playerColorData and store it as a JObject so I can modify it
+        JObject playerColorData = oldGameState["playerColors"] as JObject;
+
+        //check if the playerColorData object within the game state already has data for this device
+        if (playerColorData.HasValues && playerColorData[deviceId.ToString()] != null)
+        {
+            //there is already color data for this device, replace it
+            playerColorData[deviceId.ToString()] = colorName;
+        }
+        else
+        {
+            playerColorData.Add(deviceId.ToString(), colorName);
+            //there is no color data for this device yet, create it new
+        }
+
+        //logging and returning the updated playerColorData
+        //Debug.Log("AssignPlayerColor for device " + deviceId + " returning new playerColorData: " + playerColorData);
+
+        return playerColorData;
+    }
+
+    public void SetView(string viewName)
+    {
+        //I don't need to replace the entire game state, I can just set the view property
+        AirConsole.instance.SetCustomDeviceStateProperty("view", viewName);
+
+        //the controller listens for the onCustomDeviceStateChanged event. See the  controller-gamestates.html file for how this is handled there. 
+    }
+
+    private void RemovePlayer(int deviceID)
+    {
+        if (!players.ContainsKey(deviceID))
+        {
+            return;
+        }
+
+        //Get the player 
+        PlayerController player = players[deviceID];
+
+        //Return color to the pool
+        Color color = player.myColor;
+        GameManager.Instance.ReturnColorToList(color);
+
+        //Destroy that player objects
+        player.RemoveFromGame();
+        Destroy(player.gameObject);
+        players.Remove(deviceID);
     }
 
     void OnMessage(int device_id, JToken data)
@@ -178,6 +231,12 @@ public class AirConsoleInput : MonoBehaviour
 
             //I forward the command to the relevant player script, assigned by device ID
         }
+
     }
 
+
+    public bool IsAirInitialized()
+    {
+        return AirConsole.instance != null;
+    }
 }

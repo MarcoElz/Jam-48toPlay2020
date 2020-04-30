@@ -39,6 +39,11 @@ public class DeadCircle : MonoBehaviour
         players.Add(player);
     }
 
+    public void UnregisterToList(PlayerController player)
+    {
+        players.Remove(player);
+    }
+
     void CheckPlayers()
     {
         float radius = Radius;

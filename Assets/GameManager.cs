@@ -4,15 +4,37 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Color[] colors;
+
+    private List<Color> availableColors;
+    
+    public static GameManager Instance { get; private set; }
+
+    private void Awake()
     {
-        
+        if (Instance == null)
+            Instance = this;
+
+        availableColors = new List<Color>(colors);
     }
 
-    // Update is called once per frame
-    void Update()
+    public Color GetNextColor()
     {
-        
+        if(availableColors.Count <= 1)
+        {
+            return new Color(0f, 0f, 0f, 0f);
+        }
+
+        //Get the first color of the list
+        Color color = availableColors[0];
+        availableColors.RemoveAt(0);
+
+        return color;
+    }
+
+    public void ReturnColorToList(Color color)
+    {
+        //Insert it to the top of the list
+        availableColors.Insert(0, color); 
     }
 }

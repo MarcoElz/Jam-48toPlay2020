@@ -1092,6 +1092,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shield: {fileID: 2131405036}
+  spriteRenderer: {fileID: 4734626304354892064}
   linePrefab: {fileID: 8413751325000847895, guid: d8c8941ff31197a4f8ffdb2fc90a7af5,
     type: 3}
   speed: 15

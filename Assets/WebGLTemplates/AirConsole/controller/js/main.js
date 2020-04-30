@@ -5,6 +5,12 @@ jQuery(document).ready(function() {
   var parsed_data = {};
   var airconsole = null;
 
+
+
+
+  
+
+
   // ==========================================
   // AIRCONSOLE
   // ==========================================
@@ -27,10 +33,15 @@ jQuery(document).ready(function() {
       orientation: parsed_data.orientation || AirConsole.ORIENTATION_PORTRAIT
     });
 
+	ViewManager = new AirConsoleViewManager(airconsole);
+	
+
+	  //airconsole.getPremium();
+
     airconsole.onReady = function() {
       generator.applyData(parsed_data);
       if (parsed_data.selected_view_id) {
-        generator.setCurrentView(parsed_data.selected_view_id);
+        //generator.setCurrentView(parsed_data.selected_view_id);
       }
       // Construct2
       sendHandshake();
@@ -42,7 +53,53 @@ jQuery(document).ready(function() {
       if (data.handshake) {
         sendHandshake();
       }
+	  /* OLD
+	  if(data == "none")
+	  {
+		$("#view-0").html('<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);" > <font color="white">Max number of players in game. You can not play.</font> </div>');
+	  }
+	  else
+	  {
+		$("#view-0").css("background-color", data);
+	  }
+	  */
     };
+
+	airconsole.onCustomDeviceStateChange = function(device_id, device_data){
+	//to see logs from the controller, start your game in the "virtual controllers" browser start mode from Unity and open your browser's developer console. 
+        console.log("onCustomDeviceStateChange", device_id, device_data);
+
+        //check if the device that sent the custom device state change is the Screen (i.e. the Unity Game, in this case), and not one of the other controllers
+        if (device_id == AirConsole.SCREEN){
+          //check if the CustomDeviceStateChange data contains any view data
+          if (device_data["view"] != null && device_data["view"] != ""){
+            //set a new view accordingly
+            ViewManager.show(device_data["view"]);
+          }
+          
+          //check if there's any player color data
+          if (device_data["playerColors"] != null){
+            //check the CustomDeviceStateChange data contains any playerColorData for this particular device
+            if (device_data["playerColors"][airconsole.getDeviceId()]){
+              //this works for named colors. If you want to use colors that don't have a name, you could pass a hex code instead of a string/name
+              //document.getElementById("background").style.backgroundColor = device_data["playerColors"][airconsole.getDeviceId()];
+			  //$("#background").css("background-color", device_data["playerColors"][airconsole.getDeviceId()]);
+
+			  if(device_data["playerColors"][airconsole.getDeviceId()] == "none")
+			  {
+				$("#control").html('<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);" > <font color="white">Max number of players in game. You can not play.</font> </div>');
+			  }
+			  else
+			  {
+				$("#control").css("background-color", device_data["playerColors"][airconsole.getDeviceId()]);
+				//$("#control-2").css("background-color", device_data["playerColors"][airconsole.getDeviceId()]);
+			   }
+
+			  
+            }
+          }
+        }
+      };
 
   // ==========================================
   // EDITOR

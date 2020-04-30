@@ -5,6 +5,7 @@ using UnityEngine;
 public class KeyboardInput : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] bool rawInput;
 
     PlayerController player;
 
@@ -21,8 +22,8 @@ public class KeyboardInput : MonoBehaviour
     private void Update()
     {
         //Movement
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float h = rawInput ? Input.GetAxisRaw("Horizontal") : Input.GetAxis("Horizontal");
+        float v = rawInput ? Input.GetAxisRaw("Vertical") : Input.GetAxis("Vertical");
         Vector2 input = new Vector2(h, v);
         player.MoveInput(input);
 

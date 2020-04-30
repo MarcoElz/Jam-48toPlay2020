@@ -20,10 +20,12 @@ AirConsoleViewManager.prototype = {
     for (var i = 0; i < views.length; i++) {
       var view = views[i];
       var id = view.id;
+	  console.warn("found: ", id);
       this.views[id] = view;
       var is_start = view.className.indexOf(this.class_start) > -1;
       if (is_start) {
         start_view_id = id;
+		console.warn("start: ", id);
       }
     }
     this.hideAll();
@@ -37,13 +39,23 @@ AirConsoleViewManager.prototype = {
    * @param {String} view - The view id
    */
   show: function(id) {
-    var state = false;
+   var state = false;
+
+   var views = document.querySelectorAll('.view');
+   var myView;
+    for (var i = 0; i < views.length; i++) {
+      var view = views[i];
+	  if(view.id == id)
+	  {
+		myView = view;
+	  }
+    }
+	
     if (this.current_view_id !== id) {
-      var view = this.views[id];
-      if (view) {
+      if (myView) {
         this.current_view_id = id;
         this.hideAll();
-        view.style.display = "flex";
+        myView.style.display = "flex";
         state = true;
       } else {
         console.warn("Could not find view with ID:", id);
@@ -59,6 +71,13 @@ AirConsoleViewManager.prototype = {
     for (var key in this.views) {
       this.views[key].style.display = "none";
     }
+
+	 var views = document.querySelectorAll('.view');
+    for (var i = 0; i < views.length; i++) {
+      var view = views[i];
+	  view.style.display = "none";
+    }
+
   }
 
 };
