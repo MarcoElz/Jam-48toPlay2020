@@ -9,35 +9,45 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float HP { get; private set; }
 
     public event Action<float> onHPUpdate;
-
-    [SerializeField] Shield shield;
-    [SerializeField] SpriteRenderer spriteRenderer;
     public Color myColor { get; private set; }
 
+    //Stats
+    [Header("Stats")]
+    [SerializeField] float speed = 1f;
+    [SerializeField] float rotationSpeed = 10f;
+    [SerializeField] float startHP = 100f;
+    [SerializeField] float timeBetweenShoots = 0.25f;
+
+
+    //Bullet
+    [Header("Bullet")]
+    [SerializeField] GameObject bulletPrefab;
+    [SerializeField] Transform bulletOrigin;
+
+    //Render
+    [Header("Render")]
+    [SerializeField] SpriteRenderer spriteRenderer;
+
+    [Header("Deprecated")]
+    //Shield //Delete?
+    [SerializeField] Shield shield;
+    
+    //Line //Deprecated
     public GameObject linePrefab;
     private LineRenderer line;
-
-    public float speed = 1f;
-    public float rotationSpeed = 10f;
-    public float startHP = 100f;
     public float radiusMovement = 1f;
 
-    public bool autoShoot = true;
 
+    //Input
     private Vector3 movement;
     private Vector2 lookDir;
-
-    public GameObject bulletPrefab;
-    public Transform bulletOrigin;
-    private float timeOfLastShoot;
-    private float timeBetweenShoots = 0.25f;
-
+    
+    //Cache
     private Rigidbody2D rb;
-
-
+    private DeadCircle deadCircle;
+    private float timeOfLastShoot;
     private bool canShoot;
 
-    private DeadCircle deadCircle;
 
     private void Awake()
     {
@@ -62,7 +72,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void RemoveFromGame()
     {
-        deadCircle = FindObjectOfType<DeadCircle>();
         deadCircle.UnregisterToList(this);
     }
 
@@ -72,20 +81,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         movement = (Vector3)vector;
     }
 
+    //Deprecated
     public void LookInput(Vector2 vector)
     {
         //Debug.Log("Look Direction: " + vector);
         lookDir = vector;
         
     }
-
     public void Shield(bool active)
     {
         shield.Set(active);
         Debug.Log("Shield: " + active);
         canShoot = !active;
     }
-
     public void Dash(bool active)
     {
         
