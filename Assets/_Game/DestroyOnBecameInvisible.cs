@@ -8,6 +8,6 @@ public class DestroyOnBecameInvisible : MonoBehaviour
 
     private void OnBecameInvisible()
     {
-        Destroy(toDestroy);
+        ObjectPool.Instance.SaveObjectToPool(toDestroy);
     }
 }

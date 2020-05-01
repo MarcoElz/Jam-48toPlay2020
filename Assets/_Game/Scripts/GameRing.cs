@@ -5,7 +5,8 @@ using UnityEngine;
 public class GameRing : MonoBehaviour
 {
     public float Radius { get { return transform.localScale.x * 0.5f; } }
-    public float MaxRingSize { get { return completeRadius * 0.5f; } }
+    public float MaxRadiusSize { get { return completeRadius * 0.5f; } }
+    public float MinRadiusSize {  get { return minRadius; } }
 
     [SerializeField] float timeToFinish = 60f;
     [SerializeField] float damagePerSecond = 5f;

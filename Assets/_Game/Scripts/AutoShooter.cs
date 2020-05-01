@@ -40,6 +40,7 @@ public class AutoShooter : MonoBehaviour
 
     void Shoot()
     {
-        Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);
+        ObjectPool.Instance.SpawnPooledObjectAt(bulletOrigin.transform.position, bulletOrigin.transform.rotation);
+        //Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);
     }
 }

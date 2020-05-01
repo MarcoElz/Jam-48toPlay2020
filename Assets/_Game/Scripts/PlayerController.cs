@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         HP = startHP;
         IsAlive = true;
         onHPUpdate?.Invoke(HP / startHP);
+        onNewColor?.Invoke(myColor);
     }
 
     public void SetColor(Color color)
@@ -167,7 +168,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Shoot()
     {
-        Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);  
+        ObjectPool.Instance.SpawnPooledObjectAt(bulletOrigin.transform.position, bulletOrigin.transform.rotation);
+        //Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);   
     }
 
     public void Damage(float amount)

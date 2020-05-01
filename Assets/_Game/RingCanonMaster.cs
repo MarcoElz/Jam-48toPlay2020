@@ -11,12 +11,14 @@ public class RingCanonMaster : MonoBehaviour
 
     [SerializeField] float speed = 5f;
     [SerializeField] int numberOfCanons = 8;
+    [SerializeField] float radius = 18.5f;
+    [SerializeField] bool lookInside = false;
 
     private GameObject[] canons;
 
 
-    float timer;
-    float direction;
+    float movementDecisionTimer;
+    float movementDirection;
 
     Vector3 euler;
 
@@ -31,25 +33,25 @@ public class RingCanonMaster : MonoBehaviour
         if (!IsReady)
             return;
 
-        if(direction != 0)
+        if(movementDirection != 0)
         {
-            euler.z +=  direction * speed * Time.deltaTime; // Mathf.Lerp(startAngle, endAngle, actualTime);
+            euler.z +=  movementDirection * speed * Time.deltaTime; // Mathf.Lerp(startAngle, endAngle, actualTime);
 
             transform.rotation = Quaternion.Euler(euler);
         }
 
-        if (timer <= 0f)
+        if (movementDecisionTimer <= 0f)
         {
             GetDirection();
         }   
-        timer -= Time.deltaTime;
+        movementDecisionTimer -= Time.deltaTime;
     }
 
 
     private void GetDirection()
     {
-        timer = Random.Range(1.5f, 3f);
-        direction = Random.Range(-1f, 1f) < 0 ? -1 : 1;
+        movementDecisionTimer = Random.Range(1.5f, 3f);
+        movementDirection = Random.Range(-1f, 1f) < 0 ? -1 : 1;
     }
 
     public void CreateCanons()
@@ -61,7 +63,6 @@ public class RingCanonMaster : MonoBehaviour
     {
         canons = new GameObject[numberOfCanons];
         GameRing ring = FindObjectOfType<GameRing>();
-        float radius = ring.MaxRingSize - 1.5f;
         for (int i = 0; i < canons.Length; i++)
         {
             float angle = i * Mathf.PI * 2 / numberOfCanons;
@@ -69,6 +70,12 @@ public class RingCanonMaster : MonoBehaviour
 
             GameObject canon = Instantiate(canonPrefab, this.transform);
             canon.transform.position = pos;
+
+            if(lookInside)
+                canon.transform.up = -(-canon.transform.position + Vector3.zero).normalized; //Look to center
+            else
+                canon.transform.up = (-canon.transform.position + Vector3.zero).normalized; //Look to outside
+
             canons[i] = canon;
             yield return new WaitForSeconds(0.5f);
         }

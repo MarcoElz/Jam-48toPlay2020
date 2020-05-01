@@ -1,26 +1,49 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float speed = 10f;
     [SerializeField] float baseDamage = 0f;
     [SerializeField] float sizeMultiplier = 0.5f;
     [SerializeField] float multiplierPerSecond = 5.0f;
-    [SerializeField] GameObject particlesPrefab;
+
     private float actualDamage;
 
-    void Start()
+    private float updateCount = 0;
+
+    private float timeOfCreation;
+
+    private Transform t;
+
+    private Vector3 scaler;
+    private Vector3 startScale;
+
+    private void Awake()
     {
-        this.GetComponent<Rigidbody2D>().velocity = this.transform.right * speed;
+        t = transform;
+        scaler = Vector3.one * sizeMultiplier;
+        startScale = transform.localScale;
+    }
+
+    void OnEnable()
+    {
+        transform.localScale = startScale;
         actualDamage = baseDamage;
-        //Destroy(this.gameObject, 10f);
+        timeOfCreation = Time.time;   
     }
 
     private void Update()
     {
-        transform.localScale += Vector3.one * Time.deltaTime * sizeMultiplier;
-        actualDamage += Time.deltaTime * multiplierPerSecond;
+        t.position += this.t.right * Time.deltaTime * speed;
+
+        updateCount++;
+        if(updateCount < 3)
+        {
+            return;
+        }
+        updateCount = 0f;
+
+        t.localScale += scaler * Time.deltaTime;       
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -28,12 +51,12 @@ public class Bullet : MonoBehaviour
         IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
         if(damageable != null)
         {
+            actualDamage += (Time.time - timeOfCreation) * multiplierPerSecond;
+
             damageable.Damage(actualDamage);
-            Destroy(this.gameObject);
+            ObjectPool.Instance.UsePooledParticle(transform.position, transform.rotation);
 
-            GameObject go = Instantiate(particlesPrefab, transform.position, transform.rotation);
-            Destroy(go, 1f);
+            ObjectPool.Instance.SaveObjectToPool(this.gameObject);
         }
-
     }
 }

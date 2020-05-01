@@ -14,7 +14,9 @@ public class Counter : MonoBehaviour
 
     private IEnumerator StartCountRoutine(Action callback)
     {
-        for(int i = 0; i < transform.childCount; i++)
+        yield return new WaitForSeconds(0.5f);
+
+        for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).GetComponent<UIView>().Show();
             yield return new WaitForSeconds(1f);

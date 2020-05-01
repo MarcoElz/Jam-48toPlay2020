@@ -29,7 +29,7 @@ public class CanonAnimation : MonoBehaviour
     private IEnumerator Start()
     {
         //Set up values
-        transform.up = -(-transform.position + Vector3.zero).normalized; //Look to center
+        //transform.up = -(-transform.position + Vector3.zero).normalized; //Look to center
         color = sprite.color; //Cache color
         rotateAnimation = true; //Reset
         alphaAnimation = true; //Reset

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 371800353}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BulletOrigin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 5767180403432364522}
   - component: {fileID: 4465207656923131001}
   - component: {fileID: 2678912555352717650}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LookDir (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 5929837169395229644}
   - component: {fileID: 1052182704282663687}
   - component: {fileID: 1825752960975693824}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MainBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,8 +233,8 @@ GameObject:
   - component: {fileID: 2001358282747719833}
   - component: {fileID: 7801637447450223936}
   - component: {fileID: 1129678621}
-  - component: {fileID: 1129678620}
-  m_Layer: 0
+  - component: {fileID: 4393783271333684627}
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ MonoBehaviour:
   speed: 15
   rotationSpeed: 0.4
   startHP: 100
-  timeBetweenShoots: 0.65
+  timeBetweenShoots: 0.25
   bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
     type: 3}
   bulletOrigin: {fileID: 371800353}
@@ -303,8 +303,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &1129678620
-CircleCollider2D:
+--- !u!60 &4393783271333684627
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -317,8 +317,20 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.6
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.69219685, y: 0.00016037561}
+      - {x: 0.03695023, y: 0.332682}
+      - {x: 0.051165104, y: -0.323888}
 --- !u!1 &4866536980247033859
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,7 +340,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3334289989942506792}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +377,7 @@ GameObject:
   - component: {fileID: 5308568363454059356}
   - component: {fileID: 6802001519702324642}
   - component: {fileID: 6930094439322554310}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -436,7 +448,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6175830068953573064}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -469,7 +481,7 @@ GameObject:
   - component: {fileID: 7630432700374568919}
   - component: {fileID: 183298693912958537}
   - component: {fileID: 3324149400887133472}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bar_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -544,7 +556,7 @@ GameObject:
   - component: {fileID: 8031491775138558456}
   - component: {fileID: 4468283450964673283}
   - component: {fileID: 2958439770588269731}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Canvas_HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -658,7 +670,7 @@ GameObject:
   - component: {fileID: 801641031277484677}
   - component: {fileID: 8351035177837609516}
   - component: {fileID: 346776634515304576}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Particle System_Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -815,7 +827,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5.01
+      scalar: 5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5425,7 +5437,7 @@ GameObject:
   - component: {fileID: 2414128024984343310}
   - component: {fileID: 6619535704722985462}
   - component: {fileID: 1984963071693592367}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arc
   m_TagString: Untagged
   m_Icon: {fileID: 0}

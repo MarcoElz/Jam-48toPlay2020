@@ -16,8 +16,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] Color[] colors;
 
     [Header("Other")]
-    [SerializeField] RingCanonMaster lastManRingCanons;
+    [SerializeField] GameObject ringCanonMasterPrefab;
     [SerializeField] UIView messageView;
+    [SerializeField] UIView flashView;
     [SerializeField] TextMeshProUGUI messageLabel;
 
     //Properties
@@ -37,8 +38,10 @@ public class GameManager : MonoBehaviour
     private List<Color> availableColors;
 
     //Cache
-    private GameRing circle;
+    private GameRing ring;
     private Counter counter;
+
+    private RingCanonMaster lastManRingCanons;
 
     //Monobehaviour methods like Awake, Start, Update
     #region Monobehaviour
@@ -54,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        circle = FindObjectOfType<GameRing>();
+        ring = FindObjectOfType<GameRing>();
         counter = FindObjectOfType<Counter>();  
     }
 
@@ -81,6 +84,20 @@ public class GameManager : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.E))
         {
+            if (lastManRingCanons != null)
+            {
+                Destroy(lastManRingCanons.gameObject);
+                lastManRingCanons = null;
+            }
+
+            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+            lastManRingCanons.CreateCanons();
+        }
+
+        //Create rings by time
+        if(lastManRingCanons == null && ring.Radius < ring.MinRadiusSize + 0.1f)
+        {
+            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
             lastManRingCanons.CreateCanons();
         }
     }
@@ -88,9 +105,24 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        SpawnAIs();
+        StartCoroutine(StartGameRoutine());   
+    }
 
-        circle.Restart();
+    IEnumerator StartGameRoutine()
+    {
+        //Flash
+        flashView.Show(); //0.2f to show, and 0.2f to hide
+
+        yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
+
+        SpawnAIs(); //SpawnAIs if needed
+
+        ring.Restart();
+        if (lastManRingCanons != null)
+        {
+            Destroy(lastManRingCanons.gameObject);
+            lastManRingCanons = null;
+        }
 
         HealAll();
         RepositionPlayers();
@@ -137,13 +169,22 @@ public class GameManager : MonoBehaviour
                 lastAlive = item.Value;
                 alive++;
             }
-        }
+        }    
 
-        if(alive == 1)
+        if (alive == 1)
         {
             //Game Ends
             GameEnds(lastAlive);
+            return;
         }
+
+        if (alive < 5 && lastManRingCanons == null && ring.Radius < 14.0f)
+        {
+            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+            lastManRingCanons.CreateCanons();
+        }
+
+
     }
 
     void GameEnds(PlayerController player)
@@ -175,9 +216,9 @@ public class GameManager : MonoBehaviour
             return null;
 
         //Get an equidistance point on circle      
-        if (circle == null) circle = FindObjectOfType<GameRing>();
+        if (ring == null) ring = FindObjectOfType<GameRing>();
         float angle = players.Count * Mathf.PI * 2 / maxNumberOfPlayers;
-        Vector3 pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * circle.Radius;
+        Vector3 pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * ring.Radius;
 
         //Instantiate player prefab, store device id + player script in a dictionary
         GameObject newPlayer = Instantiate(playerPrefab, pos, transform.rotation) as GameObject;
@@ -247,13 +288,13 @@ public class GameManager : MonoBehaviour
 
     private void RepositionPlayers()
     {
-        if (circle == null) circle = FindObjectOfType<GameRing>();
+        if (ring == null) ring = FindObjectOfType<GameRing>();
 
         int count = 0;
         foreach (var item in players)
         {
             float angle = count * Mathf.PI * 2 / maxNumberOfPlayers;
-            Vector3 pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * circle.Radius;
+            Vector3 pos = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * ring.Radius;
             item.Value.transform.position = pos;
             item.Value.ForceCenterLook();
             count++;

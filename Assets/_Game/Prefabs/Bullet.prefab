@@ -10,10 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 960365392288631885}
   - component: {fileID: 960365392288631886}
-  - component: {fileID: 960365392288631887}
   - component: {fileID: 4894380316398249229}
-  - component: {fileID: 7960213802210701195}
-  m_Layer: 0
+  - component: {fileID: 320376813592716296}
+  m_Layer: 9
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,27 +84,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!50 &960365392288631887
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 960365392288631881}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!114 &4894380316398249229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,14 +96,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef3dae8fec5d1db439b7ceebf5373cf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 5
   baseDamage: 5
-  sizeMultiplier: 0.2
-  multiplierPerSecond: 10
-  particlesPrefab: {fileID: 8236844483473085898, guid: a4ff50cdef983344fbef66e80a824b7c,
-    type: 3}
---- !u!60 &7960213802210701195
-PolygonCollider2D:
+  sizeMultiplier: 0.15
+  multiplierPerSecond: 0.5
+--- !u!61 &320376813592716296
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -137,7 +113,7 @@ PolygonCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.5, y: 0}
+  m_Offset: {x: 0.5328623, y: -0.0033741295}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -147,11 +123,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.5, y: 0.2}
-      - {x: -0.5, y: -0.2}
-      - {x: 0.5, y: 0}
+  serializedVersion: 2
+  m_Size: {x: 0.97769856, y: 0.11583404}
+  m_EdgeRadius: 0
 --- !u!1 &8586536647367430455
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +137,7 @@ GameObject:
   - component: {fileID: 4409663409818236726}
   - component: {fileID: 4242078284005990908}
   - component: {fileID: 7866538943556038076}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
