@@ -49,7 +49,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
     type: 3}
   bulletOrigin: {fileID: 5809120172772718014}
-  timeBetweenShoots: 0.65
+  timeBetweenShoots: 0.4
 --- !u!114 &2948769942548232279
 MonoBehaviour:
   m_ObjectHideFlags: 0

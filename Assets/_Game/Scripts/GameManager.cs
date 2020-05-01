@@ -117,6 +117,14 @@ public class GameManager : MonoBehaviour
 
         SpawnAIs(); //SpawnAIs if needed
 
+        //Clean
+        Bullet[] bullets = FindObjectsOfType<Bullet>();
+        for(int i = 0; i < bullets.Length; i++)
+        {
+            if (bullets[i].gameObject.activeInHierarchy)
+                ObjectPool.Instance.SaveObjectToPool(bullets[i].gameObject);
+        }
+
         ring.Restart();
         if (lastManRingCanons != null)
         {

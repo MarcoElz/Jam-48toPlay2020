@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class KeyboardInput : MonoBehaviour
 {
+#if UNITY_EDITOR
     [SerializeField] bool rawInput;
 
     PlayerController player;
@@ -39,4 +40,6 @@ public class KeyboardInput : MonoBehaviour
         //    player.Shield(false);
 
     }
+
+#endif
 }
