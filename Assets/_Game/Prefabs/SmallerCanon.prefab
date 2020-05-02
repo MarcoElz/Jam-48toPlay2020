@@ -46,10 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 132c8078249de994b96512caaf19b8f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
+  bulletPrefab: {fileID: 3119119214807710472, guid: 1e67cd4a1c91769489c0f73251f80b80,
     type: 3}
   bulletOrigin: {fileID: 5809120172772718014}
   timeBetweenShoots: 0.4
+  activateOnStart: 0
 --- !u!114 &2948769942548232279
 MonoBehaviour:
   m_ObjectHideFlags: 0

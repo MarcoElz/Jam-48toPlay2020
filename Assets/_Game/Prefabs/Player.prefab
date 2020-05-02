@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7775481925c3b314b9f80ef40bcd6b85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 13
+  speed: 12
   rotationSpeed: 0.4
   startHP: 100
   timeBetweenShoots: 0.35

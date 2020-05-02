@@ -52,6 +52,7 @@ public class GameRing : MonoBehaviour
     public void Restart()
     {
         transform.localScale = Vector3.one * completeRadius;
+        reductionRate = (completeRadius - MinRadiusSize * 2f) / timeToFinish;
     }
 
 }

@@ -303,14 +303,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //if (State.Equals(GameState.LastManStanding))
-        //{
-        //    if (alive < 5 && lastManRingCanons == null && ring.Radius < 14.0f)
-        //    {
-        //        lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
-        //        lastManRingCanons.CreateCanons();
-        //    }
-        //}
+        if (State.Equals(GameState.LastManStanding))
+        {
+            if (alive < 4 && lastManRingCanons == null && ring.Radius < 13.0f)
+            {
+                lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+                lastManRingCanons.CreateCanons();
+            }
+        }
     }
 
     
