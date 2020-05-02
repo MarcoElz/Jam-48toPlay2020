@@ -13,6 +13,7 @@ public class RingCanonMaster : MonoBehaviour
     [SerializeField] int numberOfCanons = 8;
     [SerializeField] float radius = 18.5f;
     [SerializeField] bool lookInside = false;
+    [SerializeField] bool readyOnStart = false;
 
     private GameObject[] canons;
 
@@ -26,6 +27,9 @@ public class RingCanonMaster : MonoBehaviour
     {
         //CreateCanons();
         euler = transform.rotation.eulerAngles;
+
+        if(readyOnStart)
+            CreateCanons();
     }
 
     private void Update()

@@ -269,19 +269,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7775481925c3b314b9f80ef40bcd6b85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 15
+  speed: 13
   rotationSpeed: 0.4
   startHP: 100
-  timeBetweenShoots: 0.25
+  timeBetweenShoots: 0.35
   bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
     type: 3}
   bulletOrigin: {fileID: 371800353}
   destroyedParticlesPrefab: {fileID: 5345127082211278211, guid: e29515a69d856d14e8e984d536cdd6f1,
     type: 3}
   shield: {fileID: 0}
-  linePrefab: {fileID: 8413751325000847895, guid: d8c8941ff31197a4f8ffdb2fc90a7af5,
-    type: 3}
-  radiusMovement: 5
 --- !u!50 &1129678621
 Rigidbody2D:
   serializedVersion: 4

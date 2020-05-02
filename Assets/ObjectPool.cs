@@ -24,7 +24,7 @@ public class ObjectPool : MonoBehaviour
 
     public static ObjectPool Instance { get; private set; }
 
-    private List<GameObject> pooledObjects;
+    private Queue<GameObject> pooledObjects;
     private List<Particle> pooledParticlesObjects;
 
     private int lastParticleIndex;
@@ -37,12 +37,12 @@ public class ObjectPool : MonoBehaviour
 
     private void Start()
     {
-        pooledObjects = new List<GameObject>();
+        pooledObjects = new Queue<GameObject>();
         for (int i = 0; i < startBulletAmount; i++)
         {
             GameObject obj = Instantiate(bulletPrefab);
             obj.SetActive(false);
-            pooledObjects.Add(obj);
+            pooledObjects.Enqueue(obj);
         }
 
         pooledParticlesObjects = new List<Particle>();
@@ -58,9 +58,9 @@ public class ObjectPool : MonoBehaviour
     {
         if(pooledObjects.Count > 0)
         {
-            GameObject go = pooledObjects[0];
+            GameObject go = pooledObjects.Dequeue();
             go.SetActive(true);
-            pooledObjects.RemoveAt(0);
+            //pooledObjects.RemoveAt(0);
 
             if(go != null)
                 return go;
@@ -73,27 +73,23 @@ public class ObjectPool : MonoBehaviour
     {
         if (pooledObjects.Count > 0)
         {
-            GameObject go = pooledObjects[0];
-            if (go != null)
+            GameObject go = pooledObjects.Dequeue();
+            if (go != null && !go.activeInHierarchy)
             {
                 go.transform.SetPositionAndRotation(position, rotation);
                 go.SetActive(true);
-                pooledObjects.RemoveAt(0);
+                //pooledObjects.RemoveAt(0);
                 return go;
             }
                 
         }
-
-        GameObject goj = Instantiate(bulletPrefab);
-        goj.transform.position = position;
-        goj.transform.rotation = rotation;
+        GameObject goj = Instantiate(bulletPrefab, position, rotation);
         return goj;
-
     }
 
     public void SaveObjectToPool(GameObject go)
     {
-        pooledObjects.Add(go);
+        pooledObjects.Enqueue(go);
         go.SetActive(false);
     }
 

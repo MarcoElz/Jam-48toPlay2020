@@ -32,8 +32,9 @@ public class Bullet : MonoBehaviour
         timeOfCreation = Time.time;   
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+
         t.position += this.t.right * Time.deltaTime * speed;
 
         updateCount++;

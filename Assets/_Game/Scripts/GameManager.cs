@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 using Doozy.Engine.UI;
 
-public enum GameState { Initializing, LastManStanding, PlayersVsLastMan, PlayersVsLastBoss  }
+public enum GameState { Initializing, LastManStanding, PlayersVsPlayerBoss, PlayersVsLastBoss, Credits  }
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Color[] colors;
 
     [Header("Other")]
+    [SerializeField] GameObject playerBossPrefab;
     [SerializeField] GameObject ringCanonMasterPrefab;
     [SerializeField] UIView messageView;
     [SerializeField] UIView flashView;
@@ -43,6 +44,11 @@ public class GameManager : MonoBehaviour
 
     private RingCanonMaster lastManRingCanons;
 
+    private PlayerController firstBloodedPlayer;
+    private BossPlayer bossPlayer;
+
+    private int lastManStandingCounts;
+
     //Monobehaviour methods like Awake, Start, Update
     #region Monobehaviour
 
@@ -52,7 +58,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         availableColors = new List<Color>(colors);
-        State = GameState.Initializing;
+        State = GameState.LastManStanding;
     }
 
     private void Start()
@@ -114,6 +120,7 @@ public class GameManager : MonoBehaviour
         flashView.Show(); //0.2f to show, and 0.2f to hide
 
         yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
+      
 
         SpawnAIs(); //SpawnAIs if needed
 
@@ -134,6 +141,57 @@ public class GameManager : MonoBehaviour
 
         HealAll();
         RepositionPlayers();
+
+
+        //Change Mode
+        if (State.Equals(GameState.LastManStanding) && lastManStandingCounts >= 1)
+        {
+            State = GameState.PlayersVsPlayerBoss;
+        }
+        else if (State.Equals(GameState.PlayersVsPlayerBoss) && playerBossKilledWin)
+        {
+            State = GameState.PlayersVsLastBoss;
+        }
+        else if (State.Equals(GameState.PlayersVsLastBoss) && true)
+        {
+            State = GameState.Credits;
+        }
+
+
+        if (State.Equals(GameState.LastManStanding))
+        {
+            lastManStandingCounts++;
+        }
+        else if (State.Equals(GameState.PlayersVsPlayerBoss))
+        {
+            if(bossPlayer == null)
+            {
+                //Instantiate player prefab, store device id + player script in a dictionary
+                GameObject bossPlayerGo = Instantiate(playerBossPrefab, Vector3.zero, Quaternion.Euler(0f, 0f, -90f)) as GameObject;
+                bossPlayer = bossPlayerGo.GetComponent<BossPlayer>();
+
+                //Replace
+                players[firstBloodedPlayer.DeviceId] = bossPlayer;
+
+                //Set position and color
+                bossPlayer.SetColor(firstBloodedPlayer.myColor);
+                bossPlayer.SetDeviceId(firstBloodedPlayer.DeviceId);
+
+                //Unactive old
+                firstBloodedPlayer.gameObject.SetActive(false);
+            }
+            
+            bossPlayer.ForceCenterLook();
+            bossPlayer.transform.position = Vector3.zero;
+        }
+        else if (State.Equals(GameState.PlayersVsLastBoss))
+        {
+            Destroy(bossPlayer.gameObject);
+            bossPlayer = null;
+            players[firstBloodedPlayer.DeviceId] = firstBloodedPlayer;
+            firstBloodedPlayer.gameObject.SetActive(true);
+            RepositionPlayers();
+        }
 
         counter.StartCount(ActivateGame);
     }
@@ -186,26 +244,67 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        //Cache first dead
+        if(firstBloodedPlayer == null)
+        {
+            foreach (var item in players)
+            {
+                if (!item.Value.IsAlive)
+                {
+                    firstBloodedPlayer = item.Value;
+                }
+            }
+        }
+
         if (alive < 5 && lastManRingCanons == null && ring.Radius < 14.0f)
         {
             lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
             lastManRingCanons.CreateCanons();
         }
+    }
 
+    private bool playerBossKilledWin;
 
+    public void PlayerBossKilled()
+    {
+        playerBossKilledWin = true;
+        GameEnds(bossPlayer);
     }
 
     void GameEnds(PlayerController player)
     {
-        string hex = player != null ? ColorUtility.ToHtmlStringRGB(player.myColor) : "000000";
-        messageLabel.text = "Player <color=#"+hex+">#" + hex + "</color>\nWins!";
+
+        if(State.Equals(GameState.LastManStanding))
+        {
+            string hex = player != null ? ColorUtility.ToHtmlStringRGB(player.myColor) : "000000";
+            messageLabel.text = "Player <color=#" + hex + ">#" + hex + "</color>\nWins!";
+        }
+        else if(State.Equals(GameState.PlayersVsPlayerBoss))
+        {
+            if(playerBossKilledWin)
+            {
+                messageLabel.text = "Players win";
+            }
+            else
+            {
+                messageLabel.text = "REVENGE WINS";
+            }
+        }
+        else if (State.Equals(GameState.PlayersVsLastBoss))
+        {
+
+        }
+
+
         messageView.Show();
         IsGameActive = false;
         onGameEnd?.Invoke();
 
         //TODO: Remove
-        messageView.Hide(3f);
-        Invoke("StartGame", 3f);
+        messageView.Hide(5f);
+        Invoke("StartGame", 5f);
+
+
     }
 
 
@@ -241,6 +340,7 @@ public class GameManager : MonoBehaviour
         //Set position and color
         newPlayer.transform.position = pos;
         playerController.SetColor(color);
+        playerController.SetDeviceId(deviceID);
 
         return playerController;
     }
@@ -269,7 +369,7 @@ public class GameManager : MonoBehaviour
         ReturnColorToList(color);
 
         //Destroy that player objects
-        player.RemoveFromGame();
+        //player.RemoveFromGame();
         Destroy(player.gameObject);
         players.Remove(deviceID);
     }

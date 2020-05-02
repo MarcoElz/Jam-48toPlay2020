@@ -18,9 +18,10 @@ public class KeyboardInput : MonoBehaviour
     {
         //Movement
         float h = rawInput ? Input.GetAxisRaw("Horizontal") : Input.GetAxis("Horizontal");
-        float v = rawInput ? Input.GetAxisRaw("Vertical") : Input.GetAxis("Vertical");
-        Vector2 input = new Vector2(h, v);
-        player.MoveInput(input);
+        //float v = rawInput ? Input.GetAxisRaw("Vertical") : Input.GetAxis("Vertical");
+        Vector2 input = new Vector2(h, 0f);
+        GameManager.Instance.GetPlayer(101).MoveInput(input);
+        //player.MoveInput(input);
 
 
         //Look

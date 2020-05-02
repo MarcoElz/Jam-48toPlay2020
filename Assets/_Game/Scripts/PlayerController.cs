@@ -6,28 +6,29 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    public float HP { get; private set; }
-    public bool IsAlive { get; private set; }
+    public float HP { get; protected set; }
+    public bool IsAlive { get; protected set; }
+    public int DeviceId { get; protected set; }
 
     public event Action<float> onHPUpdate;
     public event Action<Color> onNewColor;
-    public Color myColor { get; private set; }
+    public Color myColor { get; protected set; }
 
     //Stats
     [Header("Stats")]
-    [SerializeField] float speed = 1f;
-    [SerializeField] float rotationSpeed = 10f;
-    [SerializeField] float startHP = 100f;
-    [SerializeField] float timeBetweenShoots = 0.25f;
+    [SerializeField] protected float speed = 1f;
+    [SerializeField] protected float rotationSpeed = 10f;
+    [SerializeField] protected float startHP = 100f;
+    [SerializeField] protected float timeBetweenShoots = 0.25f;
 
 
     //Bullet
     [Header("Bullet")]
-    [SerializeField] GameObject bulletPrefab;
-    [SerializeField] Transform bulletOrigin;
+    [SerializeField] protected GameObject bulletPrefab;
+    [SerializeField] protected Transform bulletOrigin;
 
     [Header("Other")]
-    [SerializeField] GameObject destroyedParticlesPrefab;
+    [SerializeField] protected GameObject destroyedParticlesPrefab;
 
     //Render
     //[Header("Render")]
@@ -36,22 +37,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("Deprecated")]
     //Shield //Delete?
     [SerializeField] Shield shield;
-    
-    //Line //Deprecated
-    public GameObject linePrefab;
-    private LineRenderer line;
-    public float radiusMovement = 1f;
-
 
     //Input
-    private Vector3 movement;
-    private Vector2 lookDir;
-    
+    protected Vector3 movement;
+    protected Vector2 lookDir;
+
     //Cache
-    private Rigidbody2D rb;
-    private GameRing deadCircle;
-    private float timeOfLastShoot;
-    private bool canShoot;
+    protected Rigidbody2D rb;
+    protected float timeOfLastShoot;
+    protected bool canShoot;
+    protected GameRing deadRing;
 
 
     private void Awake()
@@ -59,24 +54,31 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Start()
+    protected virtual void Start()
     {
+        deadRing = FindObjectOfType<GameRing>();
         canShoot = true;
         timeOfLastShoot = 0f;
 
         Restart();
 
-        deadCircle = FindObjectOfType<GameRing>();
-        deadCircle.RegisterToList(this);
-
         transform.right = (-transform.position + Vector3.zero).normalized;
     }
 
-    public void Restart()
+    public virtual void Restart()
     {
         HP = startHP;
         IsAlive = true;
         onHPUpdate?.Invoke(HP / startHP);
+        onNewColor?.Invoke(myColor);
+    }
+
+    protected void OnHPUpdate()
+    {
+        onHPUpdate?.Invoke(HP / startHP);
+    }
+    protected void OnNewColor(Color color)
+    {
         onNewColor?.Invoke(myColor);
     }
 
@@ -86,9 +88,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         onNewColor?.Invoke(color);
     }
 
-    public void RemoveFromGame()
+    public void SetDeviceId(int id)
     {
-        deadCircle.UnregisterToList(this);
+        DeviceId = id;
     }
 
     public void MoveInput(Vector2 vector)
@@ -98,26 +100,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     //Deprecated
-    public void LookInput(Vector2 vector)
-    {
-        //Debug.Log("Look Direction: " + vector);
-        lookDir = vector;
-        
-    }
     public void Shield(bool active)
     {
         shield.Set(active);
         Debug.Log("Shield: " + active);
         canShoot = !active;
     }
-    public void Dash(bool active)
-    {
-        
-    }
 
-    
-
-    private void Update()
+    protected virtual void Update()
     {
         if (!GameManager.Instance.IsGameActive)
             return;
@@ -133,14 +123,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         //Always in the position of the circle
         Vector3 offset = transform.position - Vector3.zero;
         offset = offset.normalized;
-        offset = offset * deadCircle.Radius;
+        offset = offset * deadRing.Radius;
         transform.position = offset;
 
         //Rotate around the circle
         if (movement.sqrMagnitude != 0f)
         {
             float x = movement.x;
-            float perimetro = 2 * Mathf.PI * deadCircle.Radius;
+            float perimetro = 2 * Mathf.PI * deadRing.Radius;
             transform.RotateAround(Vector3.zero, Vector3.forward, x * speed  * 360/perimetro * Time.deltaTime);
         }
 
@@ -161,18 +151,18 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     }
 
-    public void ForceCenterLook()
+    public virtual void ForceCenterLook()
     {
         transform.right = (-transform.position + Vector3.zero).normalized;
     }
 
-    private void Shoot()
+    protected virtual void Shoot()
     {
         ObjectPool.Instance.SpawnPooledObjectAt(bulletOrigin.transform.position, bulletOrigin.transform.rotation);
         //Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);   
     }
 
-    public void Damage(float amount)
+    public virtual void Damage(float amount)
     {
         if (!GameManager.Instance.IsGameActive)
             return;
@@ -199,14 +189,19 @@ public class PlayerController : MonoBehaviour, IDamageable
 
             if (colorRoutine != null) StopCoroutine(colorRoutine); //Stop if there is a routine running
             colorRoutine = StartCoroutine(ColorDamageRoutine()); //Start new one
-        }
-
-        
+        }     
     }
 
-    private Coroutine colorRoutine;
+    public virtual void Heal(float amount)
+    {
+        HP += amount;
+        HP = Mathf.Clamp(HP, 0f, startHP);
+        onHPUpdate?.Invoke(HP / startHP);
+    }
 
-    IEnumerator ColorDamageRoutine()
+    protected Coroutine colorRoutine;
+
+    protected IEnumerator ColorDamageRoutine()
     {
         //Start white
         onNewColor?.Invoke(Color.white);
@@ -215,22 +210,15 @@ public class PlayerController : MonoBehaviour, IDamageable
         float time = 0f;
         float speedRate = 1 / duration;
 
-        while(time < duration)
+        while (time < duration)
         {
-            time +=  Time.deltaTime * speedRate;
+            time += Time.deltaTime * speedRate;
             //Lerp
             onNewColor?.Invoke(Color.Lerp(Color.white, myColor, time));
             yield return null; //Wait frame
-        }     
+        }
 
         //End original color
         onNewColor?.Invoke(myColor);
-    }
-
-    public void Heal(float amount)
-    {
-        HP += amount;
-        HP = Mathf.Clamp(HP, 0f, startHP);
-        onHPUpdate?.Invoke(HP / startHP);
     }
 }

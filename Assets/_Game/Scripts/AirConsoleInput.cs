@@ -7,9 +7,9 @@ using System.Collections.Generic;
 public class AirConsoleInput : MonoBehaviour
 {
 
+    private int masterMessageCount;
+    private bool masterReady;
 
-    private bool firstMasterMessage;
-    
     void Awake()
     {
         if (AirConsole.instance == null)
@@ -110,17 +110,21 @@ public class AirConsoleInput : MonoBehaviour
 
         //the controller listens for the onCustomDeviceStateChanged event. See the  controller-gamestates.html file for how this is handled there. 
     }
-
+  
     void OnMessage(int device_id, JToken data)
     {
         //First message of master start game
-        if(!firstMasterMessage)
+        if(!masterReady)
         {
             int actualMaster = AirConsole.instance.GetMasterControllerDeviceId();
             if(device_id == actualMaster)
             {
-                firstMasterMessage = true;
-                GameManager.Instance.StartGame();
+                masterMessageCount++;
+                if(masterMessageCount > 5) //Each button sends 2 message (down and up)
+                {
+                    masterReady = true;
+                    GameManager.Instance.StartGame();
+                } 
             }
         }
         

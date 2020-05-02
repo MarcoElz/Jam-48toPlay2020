@@ -8,6 +8,7 @@ public class AutoShooter : MonoBehaviour
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform bulletOrigin;
     [SerializeField] float timeBetweenShoots = 0.25f;
+    [SerializeField] bool activateOnStart = false;
 
     private bool isReady;
 
@@ -16,7 +17,7 @@ public class AutoShooter : MonoBehaviour
     private void Start()
     {
         timeOfLastShoot = 0f;
-        isReady = false;
+        isReady = activateOnStart;
     }
 
     public void Activate(bool value)

@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &44881463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12275,8 +12275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeToFinish: 60
-  damagePerSecond: 0
-  minRadius: 5
+  minRadius: 10
 --- !u!23 &1000460795
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12398,6 +12397,8 @@ MonoBehaviour:
   - {r: 0.41814384, g: 0.028657902, b: 0.8679245, a: 1}
   - {r: 1, g: 0.7490196, b: 0, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  playerBossPrefab: {fileID: 1934874364593086750, guid: d276abe13110b1540be8f1f80a026b03,
+    type: 3}
   ringCanonMasterPrefab: {fileID: 8574322672659371442, guid: b7f747f78286f53489589794178daf0e,
     type: 3}
   messageView: {fileID: 1315073718}
@@ -12417,7 +12418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 960365392288631881, guid: 2220416de4303e54f8b1fae2e079fec4,
     type: 3}
-  startBulletAmount: 250
+  startBulletAmount: 300
   bulletParticlePrefab: {fileID: 8236844483473085898, guid: a4ff50cdef983344fbef66e80a824b7c,
     type: 3}
   startParticleAmount: 64

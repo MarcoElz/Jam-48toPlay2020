@@ -9,23 +9,23 @@ public class GameRing : MonoBehaviour
     public float MinRadiusSize {  get { return minRadius; } }
 
     [SerializeField] float timeToFinish = 60f;
-    [SerializeField] float damagePerSecond = 5f;
     [SerializeField] float minRadius = 5f;
-    private List<PlayerController> players;
+
 
     private float completeRadius;
-    private float timer;
+
+    private float reductionRate;
 
     private void Awake()
     {
-        players = new List<PlayerController>();
         completeRadius = transform.localScale.x;
-        timer = timeToFinish;
     }
 
     private void Start()
     {
         GameManager.Instance.onGameStart += OnStartGame;
+
+        reductionRate = (completeRadius - MinRadiusSize * 2f) / timeToFinish;
     }
 
     private void Update()
@@ -40,12 +40,8 @@ public class GameRing : MonoBehaviour
         }
 
         //Reduce Area
-        timer -= Time.deltaTime;
-        transform.localScale -= Vector3.one * (completeRadius / timeToFinish * Time.deltaTime);
+        transform.localScale -= Vector3.one * (reductionRate * Time.deltaTime);
 
-        //Damage Players
-        if(damagePerSecond > 0f)
-            DamagePlayers();
     }
 
     void OnStartGame()
@@ -56,30 +52,6 @@ public class GameRing : MonoBehaviour
     public void Restart()
     {
         transform.localScale = Vector3.one * completeRadius;
-        timer = timeToFinish;
-    }
-
-    public void RegisterToList(PlayerController player)
-    {
-        players.Add(player);
-    }
-
-    public void UnregisterToList(PlayerController player)
-    {
-        players.Remove(player);
-    }
-
-    void DamagePlayers()
-    {
-        float radius = Radius;
-        for (int i = 0; i < players.Count; i++)
-        {
-            float distance = Vector3.Distance(players[i].transform.position, transform.position);
-            if(distance > radius)
-            {
-                players[i].Damage(Time.deltaTime * damagePerSecond);
-            }
-        }
     }
 
 }
