@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class BossPlayer : PlayerController
 {
+
+    [Header("Player Boss")]
+    [SerializeField] GameObject smallInnerCanonsPrefab;
+    [SerializeField] GameObject outerCanonsPrefab;
+    RingCanonMaster smallInnerCanons;
+    RingCanonMaster outerCanons;
+
     protected override void Start()
     {
         deadRing = FindObjectOfType<GameRing>();
@@ -22,6 +29,9 @@ public class BossPlayer : PlayerController
         IsAlive = true;
         OnHPUpdate();
         OnNewColor(myColor);
+
+        if (smallInnerCanons != null) Destroy(smallInnerCanons.gameObject);
+        if (outerCanons != null) Destroy(outerCanons.gameObject);
     }
 
     protected override void Update()
@@ -134,6 +144,19 @@ public class BossPlayer : PlayerController
 
             if (colorRoutine != null) StopCoroutine(colorRoutine); //Stop if there is a routine running
             colorRoutine = StartCoroutine(ColorDamageRoutine()); //Start new one
+
+
+            if(smallInnerCanons == null && (HP / startHP) < 0.5f)
+            {
+                smallInnerCanons = Instantiate(smallInnerCanonsPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+                smallInnerCanons.CreateCanons();
+            }
+
+            if(outerCanons == null && (HP / startHP) < 0.2f)
+            {
+                outerCanons = Instantiate(outerCanonsPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+                outerCanons.CreateCanons();
+            }
         }
 
         

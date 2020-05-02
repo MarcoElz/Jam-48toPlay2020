@@ -358,6 +358,10 @@ MonoBehaviour:
   destroyedParticlesPrefab: {fileID: 5345127082211278211, guid: e29515a69d856d14e8e984d536cdd6f1,
     type: 3}
   shield: {fileID: 0}
+  smallInnerCanonsPrefab: {fileID: 7494723888940318070, guid: 7d2fb5c343a3abe4fa1b3a5037d9d655,
+    type: 3}
+  outerCanonsPrefab: {fileID: 8574322672659371442, guid: b7f747f78286f53489589794178daf0e,
+    type: 3}
 --- !u!50 &3788372057133484961
 Rigidbody2D:
   serializedVersion: 4

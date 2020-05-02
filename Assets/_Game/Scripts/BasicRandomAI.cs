@@ -10,9 +10,12 @@ public class BasicRandomAI : MonoBehaviour
     float timer;
     float direction;
 
+    private int id;
+
     private void Start()
     {
         player = GameManager.Instance.CreatePlayer(101 + Random.Range(1,10000));
+        id = player.DeviceId;
         GetDirection();     
     }
 
@@ -29,7 +32,7 @@ public class BasicRandomAI : MonoBehaviour
         float h = direction;
         //float v = rawInput ? Input.GetAxisRaw("Vertical") : Input.GetAxis("Vertical");
         Vector2 input = new Vector2(h, 0f);
-        player.MoveInput(input);
+        GameManager.Instance.GetPlayer(id).MoveInput(input);
     }
 
     private void GetDirection()

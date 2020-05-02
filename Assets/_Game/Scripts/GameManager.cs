@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] int maxNumberOfPlayers = 8;
     [SerializeField] Color[] colors;
 
+    [Header("UI")]
+    [SerializeField] Counter mainCounter;
+    [SerializeField] WordByWordCounter lastManStandingCounter;
+    [SerializeField] WordByWordCounter playerBossCounter;
+
     [Header("Other")]
     [SerializeField] GameObject playerBossPrefab;
     [SerializeField] GameObject ringCanonMasterPrefab;
@@ -40,14 +45,20 @@ public class GameManager : MonoBehaviour
 
     //Cache
     private GameRing ring;
-    private Counter counter;
 
     private RingCanonMaster lastManRingCanons;
 
     private PlayerController firstBloodedPlayer;
     private BossPlayer bossPlayer;
 
+
+    //Modes
     private int lastManStandingCounts;
+    private int playersVsBossPlayerCounts;
+    private int finalBossCounts;
+
+    private bool playerBossKilledWin;
+    private bool finalBossKilledWin;
 
     //Monobehaviour methods like Awake, Start, Update
     #region Monobehaviour
@@ -58,13 +69,13 @@ public class GameManager : MonoBehaviour
             Instance = this;
 
         availableColors = new List<Color>(colors);
-        State = GameState.LastManStanding;
+        State = GameState.Initializing;
     }
 
     private void Start()
     {
         ring = FindObjectOfType<GameRing>();
-        counter = FindObjectOfType<Counter>();  
+        //mainCounter = FindObjectOfType<Counter>();  
     }
 
     private void SpawnAIs()
@@ -101,11 +112,15 @@ public class GameManager : MonoBehaviour
         }
 
         //Create rings by time
-        if(lastManRingCanons == null && ring.Radius < ring.MinRadiusSize + 0.1f)
+        if(State.Equals(GameState.LastManStanding))
         {
-            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
-            lastManRingCanons.CreateCanons();
+            if (lastManRingCanons == null && ring.Radius < ring.MinRadiusSize + 0.1f)
+            {
+                lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+                lastManRingCanons.CreateCanons();
+            }
         }
+        
     }
     #endregion
 
@@ -118,7 +133,6 @@ public class GameManager : MonoBehaviour
     {
         //Flash
         flashView.Show(); //0.2f to show, and 0.2f to hide
-
         yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
       
 
@@ -144,15 +158,31 @@ public class GameManager : MonoBehaviour
 
 
         //Change Mode
-        if (State.Equals(GameState.LastManStanding) && lastManStandingCounts >= 1)
+        if (State.Equals(GameState.Initializing))
+        {
+            State = GameState.LastManStanding;
+
+            //Change View
+            yield return StartCoroutine(lastManStandingCounter.StartCountRoutine(null));
+
+        }
+        else if (State.Equals(GameState.LastManStanding) && lastManStandingCounts >= 1)
         {
             State = GameState.PlayersVsPlayerBoss;
+
+            //Change View
+            yield return StartCoroutine(playerBossCounter.StartCountRoutine(null));
+
+            //Flash
+            flashView.Show(); //0.2f to show, and 0.2f to hide
+            yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
+
         }
-        else if (State.Equals(GameState.PlayersVsPlayerBoss) && playerBossKilledWin)
+        else if (State.Equals(GameState.PlayersVsPlayerBoss) && (playerBossKilledWin || playersVsBossPlayerCounts >= 2))
         {
             State = GameState.PlayersVsLastBoss;
         }
-        else if (State.Equals(GameState.PlayersVsLastBoss) && true)
+        else if (State.Equals(GameState.PlayersVsLastBoss) && (finalBossKilledWin || finalBossCounts >= 3))
         {
             State = GameState.Credits;
         }
@@ -164,7 +194,7 @@ public class GameManager : MonoBehaviour
         }
         else if (State.Equals(GameState.PlayersVsPlayerBoss))
         {
-            if(bossPlayer == null)
+            if (bossPlayer == null)
             {
                 //Instantiate player prefab, store device id + player script in a dictionary
                 GameObject bossPlayerGo = Instantiate(playerBossPrefab, Vector3.zero, Quaternion.Euler(0f, 0f, -90f)) as GameObject;
@@ -180,20 +210,37 @@ public class GameManager : MonoBehaviour
                 //Unactive old
                 firstBloodedPlayer.gameObject.SetActive(false);
             }
-            
+
             bossPlayer.ForceCenterLook();
             bossPlayer.transform.position = Vector3.zero;
+            playersVsBossPlayerCounts++;
         }
         else if (State.Equals(GameState.PlayersVsLastBoss))
         {
-            Destroy(bossPlayer.gameObject);
-            bossPlayer = null;
-            players[firstBloodedPlayer.DeviceId] = firstBloodedPlayer;
-            firstBloodedPlayer.gameObject.SetActive(true);
+            if(bossPlayer != null)
+            {
+                Destroy(bossPlayer.gameObject);
+                bossPlayer = null;
+                players[firstBloodedPlayer.DeviceId] = firstBloodedPlayer;
+                firstBloodedPlayer.gameObject.SetActive(true);
+            }
+           
             RepositionPlayers();
+
+            //Create Final Boss
+
+            finalBossCounts++;
+        }
+        else if (State.Equals(GameState.Credits)) //Credits
+        {
+            State = GameState.PlayersVsPlayerBoss;
+            //Show credits
+            //Wait
+            //View.Show & Hide(5f);
+            Invoke("StartGame", 1f);
         }
 
-        counter.StartCount(ActivateGame);
+        mainCounter.StartCount(ActivateGame);
     }
 
     private void ActivateGame()
@@ -256,15 +303,17 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (alive < 5 && lastManRingCanons == null && ring.Radius < 14.0f)
-        {
-            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
-            lastManRingCanons.CreateCanons();
-        }
+        //if (State.Equals(GameState.LastManStanding))
+        //{
+        //    if (alive < 5 && lastManRingCanons == null && ring.Radius < 14.0f)
+        //    {
+        //        lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+        //        lastManRingCanons.CreateCanons();
+        //    }
+        //}
     }
 
-    private bool playerBossKilledWin;
-
+    
     public void PlayerBossKilled()
     {
         playerBossKilledWin = true;

@@ -49,4 +49,4 @@ MonoBehaviour:
   numberOfCanons: 8
   radius: 5
   lookInside: 0
-  readyOnStart: 1
+  readyOnStart: 0
