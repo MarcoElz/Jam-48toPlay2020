@@ -487,7 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975992052797288}
-  timeBetweenShoots: 0.4
+  timeBetweenShoots: 0.25
   activateOnStart: 1
 --- !u!1 &7195975990564494512
 GameObject:
@@ -616,7 +616,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975990255479036}
-  timeBetweenShoots: 0.2
+  timeBetweenShoots: 0.15
   activateOnStart: 1
 --- !u!1 &7195975990587455933
 GameObject:
@@ -1471,8 +1471,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.1, y: -0}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7195975991045436393
 CanvasRenderer:
@@ -2201,7 +2201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975990670300105}
-  timeBetweenShoots: 0.2
+  timeBetweenShoots: 0.1
   activateOnStart: 1
 --- !u!1 &7195975991654379153
 GameObject:
@@ -2249,7 +2249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975990784558057}
-  timeBetweenShoots: 0.4
+  timeBetweenShoots: 0.25
   activateOnStart: 1
 --- !u!1 &7195975991661738604
 GameObject:
@@ -2496,7 +2496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975991219144826}
-  timeBetweenShoots: 0.4
+  timeBetweenShoots: 0.25
   activateOnStart: 1
 --- !u!1 &7195975991799924734
 GameObject:
@@ -2513,7 +2513,7 @@ GameObject:
   m_Layer: 12
   m_Name: FinalBoss
   m_TagString: Untagged
-  m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -2546,7 +2546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 929b0367fa69d4b4abfbeb7b06db1651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startHP: 7500
+  startHP: 12000
   speed: 90
   attacks: {fileID: 7195975992131552361}
 --- !u!50 &7195975991799924610
@@ -2714,7 +2714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975991474711207}
-  timeBetweenShoots: 0.2
+  timeBetweenShoots: 0.15
   activateOnStart: 1
 --- !u!1 &7195975991949708109
 GameObject:
@@ -3006,7 +3006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7195975990384115119}
-  timeBetweenShoots: 0.4
+  timeBetweenShoots: 0.25
   activateOnStart: 1
 --- !u!1 &7195975992250623638
 GameObject:
@@ -3293,5 +3293,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletOrigin: {fileID: 7840347290857420777}
-  timeBetweenShoots: 0.2
+  timeBetweenShoots: 0.1
   activateOnStart: 1

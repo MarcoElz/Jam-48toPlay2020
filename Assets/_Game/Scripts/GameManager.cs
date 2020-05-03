@@ -187,12 +187,15 @@ public class GameManager : MonoBehaviour
         //Change Mode
         if (State.Equals(GameState.Initializing))
         {
+            MusicController.Instance.PlayNormalMusic(0.1f);
             State = GameState.LastManStanding;     
             //Change View
             yield return StartCoroutine(lastManStandingCounter.StartCountRoutine(null));
 
+            MusicController.Instance.PlayClip(0.6f, 4f);
+
         }
-        else if (State.Equals(GameState.LastManStanding) && lastManStandingCounts >= 1)
+        else if (State.Equals(GameState.LastManStanding) && lastManStandingCounts >= 3)
         {
             State = GameState.PlayersVsPlayerBoss;
 
@@ -217,6 +220,8 @@ public class GameManager : MonoBehaviour
             }
             RepositionPlayers();
 
+            MusicController.Instance.StopClip(3f);
+
             //Introduction dialogue
             yield return StartCoroutine(bossDialogueBox.StartRoutine("Are you having fun...", null));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player?", null));
@@ -233,11 +238,12 @@ public class GameManager : MonoBehaviour
         }
         else if (State.Equals(GameState.PlayersVsLastBoss) && (finalBossKilledWin || finalBossCounts >= 3))
         {
+            MusicController.Instance.StopClip(0.5f);
             //Boss dialogues
             yield return StartCoroutine(bossDialogueBox.StartRoutine("Oh no. Did you really think you could defeat me?", null));
             yield return StartCoroutine(hahaView.StartCountRoutine(null)); //HA HA
 
-            finalBoss.Heal(10000);
+            finalBoss.Heal(15000);
             yield return StartCoroutine(bossDialogueBox.StartRoutine("It's my world...", null));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player", null));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("And, in my world, I do what I wish", null));
@@ -300,7 +306,10 @@ public class GameManager : MonoBehaviour
 
                 //Its show time
                 yield return StartCoroutine(finalBossTitle.StartCountRoutine(null));
+                MusicController.Instance.PlayBossMusic(0.75f);
             }
+
+            finalBoss.Heal(15000);
 
             finalBossCounts++;
         }
@@ -337,7 +346,8 @@ public class GameManager : MonoBehaviour
     private void ActivateGame()
     {
         IsGameActive = true;
-        onGameStart?.Invoke();
+        onGameStart?.Invoke();   
+
     }
 
     private void ForceEnd()
@@ -403,7 +413,7 @@ public class GameManager : MonoBehaviour
         }
 
         
-        if (State.Equals(GameState.LastManStanding) && alive < 4 && lastManRingCanons == null && ring.Radius < 13.0f)
+        if (State.Equals(GameState.LastManStanding) && alive < 5 && lastManRingCanons == null && ring.Radius < 15.0f)
         {
             lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
             lastManRingCanons.CreateCanons();

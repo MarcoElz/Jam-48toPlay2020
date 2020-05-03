@@ -76,8 +76,8 @@ public class FinalBoss : MonoBehaviour, IDamageable
 
         float percentage = (HP / startHP);
         int n = 1;
-        if (percentage < 0.8f) n = 2;
-        if (percentage < 0.3f) n = 3;
+        if (percentage < 0.9f) n = 2;
+        if (percentage < 0.4f) n = 3;
 
         for (int i = 0; i < n; i++)
         {
@@ -118,5 +118,6 @@ public class FinalBoss : MonoBehaviour, IDamageable
     public void Heal(float amount)
     {
         HP = Mathf.Clamp(HP + amount, 0f, startHP);
+        onHPUpdate?.Invoke(HP / startHP);
     }
 }

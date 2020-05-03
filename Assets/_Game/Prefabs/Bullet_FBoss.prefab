@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  baseDamage: 5
+  baseDamage: 8
   sizeMultiplier: 0
   multiplierPerSecond: 0.5
 --- !u!61 &6573689234765726583

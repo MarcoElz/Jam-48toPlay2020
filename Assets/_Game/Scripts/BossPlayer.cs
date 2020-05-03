@@ -152,11 +152,11 @@ public class BossPlayer : PlayerController
                 smallInnerCanons.CreateCanons();
             }
 
-            if(outerCanons == null && (HP / startHP) < 0.2f)
-            {
-                outerCanons = Instantiate(outerCanonsPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
-                outerCanons.CreateCanons();
-            }
+            //if(outerCanons == null && (HP / startHP) < 0.2f)
+            //{
+            //    outerCanons = Instantiate(outerCanonsPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+            //    outerCanons.CreateCanons();
+            //}
         }
 
         
