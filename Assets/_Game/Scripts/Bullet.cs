@@ -54,7 +54,7 @@ public class Bullet : MonoBehaviour
         {
             actualDamage += (Time.time - timeOfCreation) * multiplierPerSecond;
 
-            damageable.Damage(actualDamage);
+            damageable.Damage(actualDamage + baseDamage);
             ObjectPool.Instance.UsePooledParticle(transform.position, transform.rotation);
 
             ObjectPool.Instance.SaveObjectToPool(this.gameObject);

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AutoShooter : MonoBehaviour
+public class BossAutoShooter : MonoBehaviour
 {
     //Bullet
     [SerializeField] Transform bulletOrigin;
     [SerializeField] float timeBetweenShoots = 0.25f;
-    [SerializeField] bool activateOnStart = false;
+    [SerializeField] bool activateOnStart = true;
 
     private bool isReady;
 
@@ -27,7 +27,7 @@ public class AutoShooter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isReady && GameManager.Instance.IsGameActive)
+        if (isReady && GameManager.Instance.IsGameActive)
         {
             //Shoot
             if (Time.time > timeOfLastShoot + timeBetweenShoots)
@@ -40,7 +40,7 @@ public class AutoShooter : MonoBehaviour
 
     void Shoot()
     {
-        ObjectPool.Instance.SpawnPooledObjectAt(bulletOrigin.transform.position, bulletOrigin.transform.rotation);
+        BossPool.Instance.SpawnPooledObjectAt(bulletOrigin.transform.position, bulletOrigin.transform.rotation);
         //Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);
     }
 }

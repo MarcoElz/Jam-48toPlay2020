@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Doozy.Engine.UI;
+using UnityEngine.Rendering.PostProcessing;
 
 public enum GameState { Initializing, LastManStanding, PlayersVsPlayerBoss, PlayersVsLastBoss, Credits  }
 
@@ -23,9 +24,23 @@ public class GameManager : MonoBehaviour
     [Header("Other")]
     [SerializeField] GameObject playerBossPrefab;
     [SerializeField] GameObject ringCanonMasterPrefab;
+    [SerializeField] UIView titleView;
+    [SerializeField] UIView creditsView;
     [SerializeField] UIView messageView;
     [SerializeField] UIView flashView;
     [SerializeField] TextMeshProUGUI messageLabel;
+
+    [Header("FinalBoss")]
+    [SerializeField] PostProcessProfile normalProfile;
+    [SerializeField] PostProcessProfile finalProfile;
+    [SerializeField] GameObject finalBossPrefab;
+    [SerializeField] PostProcessVolume postProcessVolume;
+    [SerializeField] UIView gameOverView;
+    [SerializeField] WordByWordCounter finalBossTitle;
+
+    [Header("Dialogues")]
+    [SerializeField] DialogueView bossDialogueBox;
+    [SerializeField] WordByWordCounter hahaView;
 
     //Properties
     public static GameManager Instance { get; private set; } //Singleton
@@ -50,6 +65,7 @@ public class GameManager : MonoBehaviour
 
     private PlayerController firstBloodedPlayer;
     private BossPlayer bossPlayer;
+    private FinalBoss finalBoss;
 
 
     //Modes
@@ -59,6 +75,9 @@ public class GameManager : MonoBehaviour
 
     private bool playerBossKilledWin;
     private bool finalBossKilledWin;
+
+
+    private bool isTitleHidden;
 
     //Monobehaviour methods like Awake, Start, Update
     #region Monobehaviour
@@ -75,6 +94,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         ring = FindObjectOfType<GameRing>();
+        postProcessVolume.profile = normalProfile;
         //mainCounter = FindObjectOfType<Counter>();  
     }
 
@@ -131,6 +151,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameRoutine()
     {
+        if (!isTitleHidden)
+        {
+            isTitleHidden = true;
+            titleView.Hide();
+            yield return new WaitForSeconds(0.4f);
+        }
+
         //Flash
         flashView.Show(); //0.2f to show, and 0.2f to hide
         yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
@@ -160,8 +187,7 @@ public class GameManager : MonoBehaviour
         //Change Mode
         if (State.Equals(GameState.Initializing))
         {
-            State = GameState.LastManStanding;
-
+            State = GameState.LastManStanding;     
             //Change View
             yield return StartCoroutine(lastManStandingCounter.StartCountRoutine(null));
 
@@ -181,13 +207,61 @@ public class GameManager : MonoBehaviour
         else if (State.Equals(GameState.PlayersVsPlayerBoss) && (playerBossKilledWin || playersVsBossPlayerCounts >= 2))
         {
             State = GameState.PlayersVsLastBoss;
+
+            if (bossPlayer != null)
+            {
+                Destroy(bossPlayer.gameObject);
+                bossPlayer = null;
+                players[firstBloodedPlayer.DeviceId] = firstBloodedPlayer;
+                firstBloodedPlayer.gameObject.SetActive(true);
+            }
+            RepositionPlayers();
+
+            //Introduction dialogue
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("Are you having fun...", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player?", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("LET", null, 0.5f));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("ME", null, 0.5f));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("JOIN", null, 0.5f));
+
+            yield return new WaitForSeconds(0.5f);
+
+            //Flash
+            flashView.Show(); //0.2f to show, and 0.2f to hide
+            yield return new WaitForSeconds(0.2f); //Let flash finish on all screen            
+            postProcessVolume.profile = finalProfile;
         }
         else if (State.Equals(GameState.PlayersVsLastBoss) && (finalBossKilledWin || finalBossCounts >= 3))
         {
+            //Boss dialogues
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("Oh no. Did you really think you could defeat me?", null));
+            yield return StartCoroutine(hahaView.StartCountRoutine(null)); //HA HA
+
+            finalBoss.Heal(10000);
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("It's my world...", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("And, in my world, I do what I wish", null));
+
+            //Kill all players
+            yield return new WaitForSeconds(1f);
+            foreach (var item in players)
+            {
+                item.Value.HardKill();
+            }
+            yield return new WaitForSeconds(1f);
+
+            //HA HA HA HA HA HA
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("HA HA HA HA HA HA HA...", null, 0.1f));
+
+            //Obscure screen. Ready for credits
+            gameOverView.Show();
+         
             State = GameState.Credits;
+
+            postProcessVolume.profile = normalProfile;
         }
 
-
+        bool willGameActivate = true;
         if (State.Equals(GameState.LastManStanding))
         {
             lastManStandingCounts++;
@@ -216,31 +290,48 @@ public class GameManager : MonoBehaviour
             playersVsBossPlayerCounts++;
         }
         else if (State.Equals(GameState.PlayersVsLastBoss))
-        {
-            if(bossPlayer != null)
-            {
-                Destroy(bossPlayer.gameObject);
-                bossPlayer = null;
-                players[firstBloodedPlayer.DeviceId] = firstBloodedPlayer;
-                firstBloodedPlayer.gameObject.SetActive(true);
-            }
+        {     
            
-            RepositionPlayers();
-
             //Create Final Boss
+            if(finalBoss == null)
+            {
+                GameObject finalBossGo = Instantiate(finalBossPrefab, Vector3.zero, Quaternion.Euler(0f, 0f, 0f)) as GameObject;
+                finalBoss = finalBossGo.GetComponent<FinalBoss>();
+
+                //Its show time
+                yield return StartCoroutine(finalBossTitle.StartCountRoutine(null));
+            }
 
             finalBossCounts++;
         }
         else if (State.Equals(GameState.Credits)) //Credits
         {
-            State = GameState.PlayersVsPlayerBoss;
-            //Show credits
-            //Wait
-            //View.Show & Hide(5f);
+            //Delete boss
+            if (finalBoss != null)
+            {
+                Destroy(finalBoss.gameObject);
+                //Its show time
+            }
+
+            State = GameState.LastManStanding;
+            lastManStandingCounts = 0;
+            playersVsBossPlayerCounts = 0;
+            finalBossCounts = 0;
+            firstBloodedPlayer = null;
+
+            yield return new WaitForSeconds(5f);
+            gameOverView.Hide();
+
+            creditsView.Show();//Show credits           
+            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(10f);//Wait
+            creditsView.Hide(); //Hide
+            willGameActivate = false;
             Invoke("StartGame", 1f);
         }
 
-        mainCounter.StartCount(ActivateGame);
+        if(willGameActivate)
+            mainCounter.StartCount(ActivateGame);
     }
 
     private void ActivateGame()
@@ -283,16 +374,24 @@ public class GameManager : MonoBehaviour
                 alive++;
             }
         }    
-
-        if (alive == 1)
+        
+        if (State.Equals(GameState.LastManStanding) && alive == 1)
         {
             //Game Ends
             GameEnds(lastAlive);
             return;
         }
+        else if(State.Equals(GameState.PlayersVsPlayerBoss) && alive == 1)
+        {
+            GameEnds(null);
+        }
+        else if (State.Equals(GameState.PlayersVsLastBoss) && alive == 0)
+        {
+            GameEnds(null);
+        }
 
         //Cache first dead
-        if(firstBloodedPlayer == null)
+        if (firstBloodedPlayer == null)
         {
             foreach (var item in players)
             {
@@ -303,14 +402,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (State.Equals(GameState.LastManStanding))
+        
+        if (State.Equals(GameState.LastManStanding) && alive < 4 && lastManRingCanons == null && ring.Radius < 13.0f)
         {
-            if (alive < 4 && lastManRingCanons == null && ring.Radius < 13.0f)
-            {
-                lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
-                lastManRingCanons.CreateCanons();
-            }
+            lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
+            lastManRingCanons.CreateCanons();
         }
+        
     }
 
     
@@ -318,6 +416,12 @@ public class GameManager : MonoBehaviour
     {
         playerBossKilledWin = true;
         GameEnds(bossPlayer);
+    }
+
+    public void FinalBossKilled()
+    {
+        finalBossKilledWin = true;
+        GameEnds(null);
     }
 
     void GameEnds(PlayerController player)
@@ -339,20 +443,23 @@ public class GameManager : MonoBehaviour
                 messageLabel.text = "REVENGE WINS";
             }
         }
-        else if (State.Equals(GameState.PlayersVsLastBoss))
+
+
+        if (!State.Equals(GameState.PlayersVsLastBoss))
         {
+            messageView.Show();
+            IsGameActive = false;
+            onGameEnd?.Invoke();
 
+            //TODO: Remove
+            messageView.Hide(5f);
+            Invoke("StartGame", 5f);
         }
-
-
-        messageView.Show();
-        IsGameActive = false;
-        onGameEnd?.Invoke();
-
-        //TODO: Remove
-        messageView.Hide(5f);
-        Invoke("StartGame", 5f);
-
+        else
+        {
+            IsGameActive = false;
+            Invoke("StartGame", 0.5f);
+        }
 
     }
 

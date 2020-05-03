@@ -162,6 +162,21 @@ public class PlayerController : MonoBehaviour, IDamageable
         //Instantiate(bulletPrefab, bulletOrigin.transform.position, bulletOrigin.transform.rotation);   
     }
 
+    public void HardKill()
+    {
+        HP = 0f;
+        IsAlive = false;
+        this.gameObject.SetActive(false);
+        //Spawn particles
+        GameObject go = Instantiate(destroyedParticlesPrefab, transform.position, transform.rotation);
+        ParticleColorChanger[] colors = go.GetComponentsInChildren<ParticleColorChanger>();
+        for (int i = 0; i < colors.Length; i++)
+        {
+            colors[i].Init(this);
+        }
+        Destroy(go, 1.5f);
+    }
+
     public virtual void Damage(float amount)
     {
         if (!GameManager.Instance.IsGameActive)
