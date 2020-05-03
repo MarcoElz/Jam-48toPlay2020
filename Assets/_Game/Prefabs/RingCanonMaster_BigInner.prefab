@@ -43,9 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be5b87f7917761d4b81343f14b74781c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canonPrefab: {fileID: 5809120171244124304, guid: f6411c22d3cfd974e8da97e7d0b51c39,
+  canonPrefab: {fileID: 2691550671887977031, guid: 27e894138a6f26e4fa6e89f97856ca88,
     type: 3}
-  speed: 40
+  speed: 60
   numberOfCanons: 6
   radius: 3
   lookInside: 0

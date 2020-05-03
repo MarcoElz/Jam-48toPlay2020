@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f); //Let flash finish on all screen
 
         }
-        else if (State.Equals(GameState.PlayersVsPlayerBoss) && (playerBossKilledWin || playersVsBossPlayerCounts >= 2))
+        else if (State.Equals(GameState.PlayersVsPlayerBoss) && (playerBossKilledWin || playersVsBossPlayerCounts >= 1))
         {
             State = GameState.PlayersVsLastBoss;
 
@@ -240,7 +240,7 @@ public class GameManager : MonoBehaviour
         {
             MusicController.Instance.StopClip(0.5f);
             //Boss dialogues
-            yield return StartCoroutine(bossDialogueBox.StartRoutine("Oh no. Did you really think you could defeat me?", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("Oh no. Did you really think you could WIN?", null));
             yield return StartCoroutine(hahaView.StartCountRoutine(null)); //HA HA
 
             finalBoss.Heal(15000);
@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviour
                 //Its show time
             }
 
-            State = GameState.LastManStanding;
+            State = GameState.Initializing;
             lastManStandingCounts = 0;
             playersVsBossPlayerCounts = 0;
             finalBossCounts = 0;
