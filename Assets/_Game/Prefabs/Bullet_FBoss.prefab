@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toDestroy: {fileID: 6573689234765726441}
+  isBossBullet: 1
 --- !u!1 &6573689234765726441
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,7 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6573689234765726373}
   - component: {fileID: 6573689234765726575}
-  - component: {fileID: 6573689234765726483}
+  - component: {fileID: 4568746468527939643}
   - component: {fileID: 6573689234765726583}
   m_Layer: 13
   m_Name: Bullet_FBoss
@@ -179,7 +180,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6573689234765726483
+--- !u!114 &4568746468527939643
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -188,13 +189,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6573689234765726441}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef3dae8fec5d1db439b7ceebf5373cf7, type: 3}
+  m_Script: {fileID: 11500000, guid: f3131a0bbad15c749a9881078e169b9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  baseDamage: 8
+  baseDamage: 4
   sizeMultiplier: 0
-  multiplierPerSecond: 0.5
+  multiplierPerSecond: 0.1
 --- !u!61 &6573689234765726583
 BoxCollider2D:
   m_ObjectHideFlags: 0

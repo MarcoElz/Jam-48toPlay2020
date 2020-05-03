@@ -223,7 +223,7 @@ public class GameManager : MonoBehaviour
             MusicController.Instance.StopClip(3f);
 
             //Introduction dialogue
-            yield return StartCoroutine(bossDialogueBox.StartRoutine("Are you having fun...", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("Are you having fun...", null, 0.5f));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player?", null));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("LET", null, 0.5f));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("ME", null, 0.5f));
@@ -244,8 +244,8 @@ public class GameManager : MonoBehaviour
             yield return StartCoroutine(hahaView.StartCountRoutine(null)); //HA HA
 
             finalBoss.Heal(15000);
-            yield return StartCoroutine(bossDialogueBox.StartRoutine("It's my world...", null));
-            yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player", null));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("It's my world...", null, 0.5f));
+            yield return StartCoroutine(bossDialogueBox.StartRoutine("... Player", null, 1f));
             yield return StartCoroutine(bossDialogueBox.StartRoutine("And, in my world, I do what I wish", null));
 
             //Kill all players
@@ -413,7 +413,7 @@ public class GameManager : MonoBehaviour
         }
 
         
-        if (State.Equals(GameState.LastManStanding) && alive < 5 && lastManRingCanons == null && ring.Radius < 15.0f)
+        if (State.Equals(GameState.LastManStanding) && alive < 5 && lastManRingCanons == null)
         {
             lastManRingCanons = Instantiate(ringCanonMasterPrefab, Vector3.zero, Quaternion.identity).GetComponent<RingCanonMaster>();
             lastManRingCanons.CreateCanons();

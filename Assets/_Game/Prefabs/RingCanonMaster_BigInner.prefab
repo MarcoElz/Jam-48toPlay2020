@@ -46,7 +46,7 @@ MonoBehaviour:
   canonPrefab: {fileID: 5809120171244124304, guid: f6411c22d3cfd974e8da97e7d0b51c39,
     type: 3}
   speed: 40
-  numberOfCanons: 8
-  radius: 4
-  lookInside: 1
+  numberOfCanons: 6
+  radius: 3
+  lookInside: 0
   readyOnStart: 0
