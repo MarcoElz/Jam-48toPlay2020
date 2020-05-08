@@ -1,1 +1,2 @@
-Assets/AirConsole/** linguist-vendored=true
+Assets/AirConsole/* linguist-vendored=true
+Assets/WebGLTemplates/* linguist-vendored=true
